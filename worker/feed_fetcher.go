@@ -80,7 +80,12 @@ func (f *FeedFetcher) FetchOne(feed *models.Feed) error {
 		}
 
 		if item.PublishedParsed != nil {
-			article.PublishedAt = *item.PublishedParsed
+			pubDate := *item.PublishedParsed
+			if pubDate.After(time.Now()) {
+				article.PublishedAt = time.Now()
+			} else {
+				article.PublishedAt = pubDate
+			}
 		} else {
 			article.PublishedAt = time.Now()
 		}
