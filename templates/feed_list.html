@@ -1,0 +1,39 @@
+{{range .Feeds}}
+<div class="column is-one-third">
+    <div class="card">
+        <div class="card-content">
+            <p class="title is-4">{{.Title}}</p>
+            <p class="subtitle is-6">Last updated: {{.LastFetched.Format "2006-01-02 15:04:05"}}</p>
+            <div class="content">
+                {{.Description}}
+            </div>
+        </div>
+        <footer class="card-footer">
+            <a href="/feed/{{.ID}}/articles" class="card-footer-item">View Articles</a>
+        </footer>
+    </div>
+</div>
+{{end}}
+
+<div class="column is-12">
+    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+        <button class="pagination-previous" 
+                hx-get="/feeds?page={{subtract .CurrentPage 1}}"
+                hx-target="#feed-container"
+                {{if le .CurrentPage 1}}disabled{{end}}>Previous</button>
+        {{if lt .CurrentPage .TotalPages}}
+        <button class="pagination-next"
+                hx-get="/feeds?page={{add .CurrentPage 1}}"
+                hx-target="#feed-container">Next</button>
+        {{end}}
+        <ul class="pagination-list">
+            {{range $i := .Pages}}
+            <li>
+                <button class="pagination-link {{if eq $i $.CurrentPage}}is-current{{end}}"
+                        hx-get="/feeds?page={{$i}}"
+                        hx-target="#feed-container">{{$i}}</button>
+            </li>
+            {{end}}
+        </ul>
+    </nav>
+</div>

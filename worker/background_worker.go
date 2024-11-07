@@ -29,6 +29,8 @@ func (w *BackgroundWorker) Start() {
 			}
 		}()
 
+		w.safeFetch()
+
 		for {
 			select {
 			case <-w.done:

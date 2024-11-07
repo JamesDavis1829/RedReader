@@ -3,6 +3,8 @@ package main
 import (
 	"html/template"
 	"io"
+	"math"
+	"strconv"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -39,7 +41,10 @@ func main() {
 	e := echo.New()
 
 	t := &Template{
-		templates: template.Must(template.ParseGlob("templates/*.html")),
+		templates: template.Must(template.New("").Funcs(template.FuncMap{
+			"subtract": func(a, b int64) int64 { return a - b },
+			"add":      func(a, b int64) int64 { return a + b },
+		}).ParseGlob("templates/*.html")),
 	}
 	e.Renderer = t
 
@@ -64,8 +69,8 @@ func main() {
 	e.GET("/", func(c echo.Context) error {
 		data := PageData{
 			Title:    "Red Reader",
-			Header:   "Hello World",
-			Subtitle: "My first website with Bulma!",
+			Header:   "Your Feeds",
+			Subtitle: "Stay updated with your favorite content",
 		}
 
 		if user := c.Get("user"); user != nil {
@@ -73,6 +78,33 @@ func main() {
 		}
 
 		return c.Render(200, "index.html", data)
+	})
+
+	// Update feeds handler with pagination
+	e.GET("/feeds", func(c echo.Context) error {
+		page, _ := strconv.ParseInt(c.QueryParam("page"), 10, 64)
+		if page < 1 {
+			page = 1
+		}
+		perPage := int64(9) // Show 9 feeds per page
+
+		feeds, total, err := feedRepo.GetPaginatedFeeds(page, perPage)
+		if err != nil {
+			return err
+		}
+
+		totalPages := int64(math.Ceil(float64(total) / float64(perPage)))
+		pages := make([]int64, totalPages)
+		for i := int64(0); i < totalPages; i++ {
+			pages[i] = i + 1
+		}
+
+		return c.Render(200, "feed_list.html", map[string]interface{}{
+			"Feeds":       feeds,
+			"CurrentPage": page,
+			"TotalPages":  totalPages,
+			"Pages":       pages,
+		})
 	})
 
 	e.GET("/index", func(c echo.Context) error {
