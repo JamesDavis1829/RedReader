@@ -190,6 +190,16 @@ func main() {
 		return c.Redirect(302, "/")
 	})
 
+	// Add this new route handler before e.Logger.Fatal(e.Start(":1323"))
+	e.GET("/article/:id", func(c echo.Context) error {
+		articleId := c.Param("id")
+		article, err := articleRepo.GetArticleContent(articleId)
+		if err != nil {
+			return err
+		}
+		return c.Render(200, "article_view.html", article)
+	})
+
 	e.Logger.Fatal(e.Start(":1323"))
 }
 
