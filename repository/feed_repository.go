@@ -97,7 +97,7 @@ func (r *FeedRepository) GetPaginatedFeeds(page, perPage int64) ([]*models.Feed,
 	// Set up pagination options
 	skip := (page - 1) * perPage
 	opts := options.Find().
-		SetSort(bson.D{{Key: "lastFetched", Value: -1}}).
+		SetSort(bson.D{{Key: "title", Value: 1}}).
 		SetSkip(skip).
 		SetLimit(perPage)
 

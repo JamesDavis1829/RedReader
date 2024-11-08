@@ -19,12 +19,8 @@
             <h1 class="title">{{.Title | safeHTML}}</h1>
             <p class="subtitle">{{.Subtitle | safeHTML}}</p>
             
-            <div id="articles-container" 
-                 class="columns is-multiline"
-                 hx-get="/articles/list?page=1"
-                 hx-trigger="load"
-                 hx-swap="innerHTML">
-                <!-- Articles will be loaded here -->
+            <div id="content-area" class="columns is-multiline">
+                <!-- Content will be loaded here -->
             </div>
         </div>
     </section>

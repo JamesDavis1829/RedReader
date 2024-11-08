@@ -112,8 +112,12 @@ func main() {
 	e.GET("/feeds/:id/articles", func(c echo.Context) error {
 		feedId := c.Param("id")
 		page, _ := strconv.ParseInt(c.QueryParam("page"), 10, 64)
+		feedPage, _ := strconv.ParseInt(c.QueryParam("feedPage"), 10, 64)
 		if page < 1 {
 			page = 1
+		}
+		if feedPage < 1 {
+			feedPage = 1
 		}
 		perPage := int64(10) // Show 10 articles per page
 
@@ -139,6 +143,7 @@ func main() {
 			"CurrentPage": page,
 			"TotalPages":  totalPages,
 			"Pages":       pages,
+			"FeedPage":    feedPage,
 		})
 	})
 

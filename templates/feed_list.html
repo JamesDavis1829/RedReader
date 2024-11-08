@@ -1,42 +1,47 @@
-{{range .Feeds}}
-<div class="column is-one-third">
-    <div class="card">
-        <div class="card-content">
-            <p class="title is-4">{{.Title}}</p>
-            <p class="subtitle is-6">{{.Description}}</p>
+<div id="feed-list">
+    <div class="columns is-multiline">
+        {{range .Feeds}}
+        <div class="column is-one-third">
+            <div class="card">
+                <div class="card-content">
+                    <p class="title is-4">{{.Title}}</p>
+                    <p class="subtitle is-6">{{.Description}}</p>
+                </div>
+                <footer class="card-footer">
+                    <a class="card-footer-item" 
+                       hx-get="/feeds/{{.ID}}/articles?page=1&feedPage={{$.CurrentPage}}"
+                       hx-target="#content-area"
+                       hx-swap="innerHTML show:window:top"
+                       hx-push-url="true">
+                        Articles
+                    </a>
+                </footer>
+            </div>
         </div>
-        <footer class="card-footer">
-            <a class="card-footer-item" 
-               hx-get="/feeds/{{.ID}}/articles?page=1"
-               hx-target="#content-area"
-               hx-push-url="true">
-                Articles
-            </a>
-        </footer>
-    </div>
-</div>
-{{end}}
-
-<nav class="pagination is-centered" role="navigation" aria-label="pagination">
-    <a class="pagination-previous {{if eq .CurrentPage 1}}is-disabled{{end}}" 
-       {{if gt .CurrentPage 1}}
-       hx-get="/feeds?page={{subtract .CurrentPage 1}}"
-       hx-target="#feed-container"
-       {{end}}>
-       Previous
-    </a>
-    {{if lt .CurrentPage .TotalPages}}
-    <a class="pagination-next"
-       hx-get="/feeds?page={{add .CurrentPage 1}}"
-       hx-target="#feed-container">Next</a>
-    {{end}}
-    <ul class="pagination-list">
-        {{range .Pages}}
-        <li>
-            <a class="pagination-link {{if eq . $.CurrentPage}}is-current{{end}}"
-               hx-get="/feeds?page={{.}}"
-               hx-target="#feed-container">{{.}}</a>
-        </li>
         {{end}}
-    </ul>
-</nav>
+    </div>
+
+    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+        <a class="pagination-previous {{if eq .CurrentPage 1}}is-disabled{{end}}" 
+           {{if gt .CurrentPage 1}}
+           hx-get="/feeds?page={{subtract .CurrentPage 1}}"
+           hx-target="#feed-list"
+           {{end}}>
+           Previous
+        </a>
+        {{if lt .CurrentPage .TotalPages}}
+        <a class="pagination-next"
+           hx-get="/feeds?page={{add .CurrentPage 1}}"
+           hx-target="#feed-list">Next</a>
+        {{end}}
+        <ul class="pagination-list">
+            {{range .Pages}}
+            <li>
+                <a class="pagination-link {{if eq . $.CurrentPage}}is-current{{end}}"
+                   hx-get="/feeds?page={{.}}"
+                   hx-target="#feed-list">{{.}}</a>
+            </li>
+            {{end}}
+        </ul>
+    </nav>
+</div>

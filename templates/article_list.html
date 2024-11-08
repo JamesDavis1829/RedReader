@@ -1,4 +1,17 @@
 <div class="container">
+    <div class="level">
+        <div class="level-left">
+            <div class="level-item">
+                <a class="button is-light"
+                   hx-get="/feeds?page={{.FeedPage}}"
+                   hx-target="#content-area"
+                   hx-push-url="true">
+                    ← Back to Feeds
+                </a>
+            </div>
+        </div>
+    </div>
+
     <h1 class="title">Articles from {{.Feed.Title}}</h1>
     
     {{range .Articles}}
