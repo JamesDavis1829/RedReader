@@ -26,20 +26,23 @@
            {{if gt .CurrentPage 1}}
            hx-get="/feeds?page={{subtract .CurrentPage 1}}"
            hx-target="#feed-list"
+           onclick="delayedSmoothScroll('#page-title')"
            {{end}}>
            Previous
         </a>
         {{if lt .CurrentPage .TotalPages}}
         <a class="pagination-next"
            hx-get="/feeds?page={{add .CurrentPage 1}}"
-           hx-target="#feed-list">Next</a>
+           hx-target="#feed-list"
+           onclick="delayedSmoothScroll('#page-title')">Next</a>
         {{end}}
         <ul class="pagination-list">
             {{range .Pages}}
             <li>
                 <a class="pagination-link {{if eq . $.CurrentPage}}is-current{{end}}"
                    hx-get="/feeds?page={{.}}"
-                   hx-target="#feed-list">{{.}}</a>
+                   hx-target="#feed-list"
+                   onclick="delayedSmoothScroll('#page-title')">{{.}}</a>
             </li>
             {{end}}
         </ul>

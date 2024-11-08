@@ -44,22 +44,25 @@
     <nav class="pagination is-centered" role="navigation" aria-label="pagination">
         <a class="pagination-previous {{if eq .CurrentPage 1}}is-disabled{{end}}" 
            {{if gt .CurrentPage 1}}
-           hx-get="/feeds/{{.Feed.ID}}/articles?page={{subtract .CurrentPage 1}}"
+           hx-get="/feeds/{{.Feed.ID}}/articles?page={{subtract .CurrentPage 1}}&feedPage={{.FeedPage}}"
            hx-target="#content-area"
+           onclick="delayedSmoothScroll('#content-area')"
            {{end}}>
            Previous
         </a>
         {{if lt .CurrentPage .TotalPages}}
         <a class="pagination-next"
-           hx-get="/feeds/{{.Feed.ID}}/articles?page={{add .CurrentPage 1}}"
-           hx-target="#content-area">Next</a>
+           hx-get="/feeds/{{.Feed.ID}}/articles?page={{add .CurrentPage 1}}&feedPage={{.FeedPage}}"
+           hx-target="#content-area"
+           onclick="delayedSmoothScroll('#content-area')">Next</a>
         {{end}}
         <ul class="pagination-list">
             {{range .Pages}}
             <li>
                 <a class="pagination-link {{if eq . $.CurrentPage}}is-current{{end}}"
-                   hx-get="/feeds/{{$.Feed.ID}}/articles?page={{.}}"
-                   hx-target="#content-area">{{.}}</a>
+                   hx-get="/feeds/{{$.Feed.ID}}/articles?page={{.}}&feedPage={{$.FeedPage}}"
+                   hx-target="#content-area"
+                   onclick="delayedSmoothScroll('#content-area')">{{.}}</a>
             </li>
             {{end}}
         </ul>

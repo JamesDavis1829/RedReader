@@ -29,7 +29,7 @@ func (w *BackgroundWorker) Start() {
 			}
 		}()
 
-		w.safeFetch()
+		//w.safeFetch()
 
 		for {
 			select {

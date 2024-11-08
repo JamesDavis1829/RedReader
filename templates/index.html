@@ -48,17 +48,13 @@
         </div>
     </nav>
     <section class="section">
-        <div class="container">
+        <div class="container" id="page-title">
             <h1 class="title">{{.Title}}</h1>
             <p class="subtitle">{{.Subtitle}}</p>
-            
+
             <!-- Add this div to hold either feeds or articles -->
             <div id="content-area">
-                <div id="feed-container" 
-                     class="columns is-multiline"
-                     hx-get="/feeds?page=1"
-                     hx-trigger="load"
-                     hx-swap="innerHTML">
+                <div id="feed-container" class="columns is-multiline" hx-get="/feeds?page=1" hx-trigger="load">
                     <!-- Feed cards will be loaded here -->
                 </div>
             </div>
@@ -76,6 +72,14 @@
                 });
             });
         });
+
+        function delayedSmoothScroll(target, timeout = 50) {
+            setTimeout(() => {
+                document.querySelector(target).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }, timeout);
+        }
     </script>
 </body>
 
