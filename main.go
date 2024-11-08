@@ -190,7 +190,6 @@ func main() {
 		return c.Redirect(302, "/")
 	})
 
-	// Add this new route handler before e.Logger.Fatal(e.Start(":1323"))
 	e.GET("/article/:id", func(c echo.Context) error {
 		articleId := c.Param("id")
 		article, err := articleRepo.GetArticleContent(articleId)
