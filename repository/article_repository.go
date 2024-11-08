@@ -6,6 +6,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"redapplications.com/redreader/models"
 )
 
@@ -32,4 +33,35 @@ func (r *ArticleRepository) ArticleExists(url string) (bool, error) {
 
 	count, err := r.collection.CountDocuments(ctx, bson.M{"url": url})
 	return count > 0, err
+}
+
+func (r *ArticleRepository) GetPaginatedArticlesByFeed(feedId string, page, perPage int64) ([]*models.Article, int64, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	skip := (page - 1) * perPage
+	filter := bson.M{"feedId": feedId}
+
+	total, err := r.collection.CountDocuments(ctx, filter)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	findOptions := options.Find().
+		SetSort(bson.D{{Key: "publishedAt", Value: -1}}).
+		SetSkip(skip).
+		SetLimit(perPage)
+
+	cursor, err := r.collection.Find(ctx, filter, findOptions)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer cursor.Close(ctx)
+
+	var articles []*models.Article
+	if err = cursor.All(ctx, &articles); err != nil {
+		return nil, 0, err
+	}
+
+	return articles, total, nil
 }

@@ -27,7 +27,8 @@
 
         <div id="navbarBasic" class="navbar-menu">
             <div class="navbar-start">
-                <a class="navbar-item">Home</a>
+                <a class="navbar-item" href="/">Home</a>
+                <a class="navbar-item" href="/articles">Articles</a>
                 <a class="navbar-item">Settings</a>
             </div>
 
@@ -51,12 +52,15 @@
             <h1 class="title">{{.Title}}</h1>
             <p class="subtitle">{{.Subtitle}}</p>
             
-            <div id="feed-container" 
-                 class="columns is-multiline"
-                 hx-get="/feeds?page=1"
-                 hx-trigger="load"
-                 hx-swap="innerHTML">
-                <!-- Feed cards will be loaded here -->
+            <!-- Add this div to hold either feeds or articles -->
+            <div id="content-area">
+                <div id="feed-container" 
+                     class="columns is-multiline"
+                     hx-get="/feeds?page=1"
+                     hx-trigger="load"
+                     hx-swap="innerHTML">
+                    <!-- Feed cards will be loaded here -->
+                </div>
             </div>
         </div>
     </section>

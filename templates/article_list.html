@@ -1,0 +1,52 @@
+<div class="container">
+    <h1 class="title">Articles from {{.Feed.Title}}</h1>
+    
+    {{range .Articles}}
+    <div class="box">
+        <article class="media">
+            <div class="media-content">
+                <div class="content">
+                    <p>
+                        <strong>{{.Title}}</strong>
+                        {{if .Author}}<small>by {{.Author}}</small>{{end}}
+                        <small>{{.PublishedAt.Format "Jan 02, 2006"}}</small>
+                        <br>
+                        {{.Description | safeHTML}}
+                    </p>
+                </div>
+                <nav class="level is-mobile">
+                    <div class="level-left">
+                        <a class="level-item" href="{{.URL}}" target="_blank">
+                            <span class="button is-small is-link">Read More</span>
+                        </a>
+                    </div>
+                </nav>
+            </div>
+        </article>
+    </div>
+    {{end}}
+
+    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+        <a class="pagination-previous {{if eq .CurrentPage 1}}is-disabled{{end}}" 
+           {{if gt .CurrentPage 1}}
+           hx-get="/feeds/{{.Feed.ID}}/articles?page={{subtract .CurrentPage 1}}"
+           hx-target="#content-area"
+           {{end}}>
+           Previous
+        </a>
+        {{if lt .CurrentPage .TotalPages}}
+        <a class="pagination-next"
+           hx-get="/feeds/{{.Feed.ID}}/articles?page={{add .CurrentPage 1}}"
+           hx-target="#content-area">Next</a>
+        {{end}}
+        <ul class="pagination-list">
+            {{range .Pages}}
+            <li>
+                <a class="pagination-link {{if eq . $.CurrentPage}}is-current{{end}}"
+                   hx-get="/feeds/{{$.Feed.ID}}/articles?page={{.}}"
+                   hx-target="#content-area">{{.}}</a>
+            </li>
+            {{end}}
+        </ul>
+    </nav>
+</div>

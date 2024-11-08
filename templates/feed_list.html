@@ -3,37 +3,40 @@
     <div class="card">
         <div class="card-content">
             <p class="title is-4">{{.Title}}</p>
-            <p class="subtitle is-6">Last updated: {{.LastFetched.Format "2006-01-02 15:04:05"}}</p>
-            <div class="content">
-                {{.Description}}
-            </div>
+            <p class="subtitle is-6">{{.Description}}</p>
         </div>
         <footer class="card-footer">
-            <a href="/feed/{{.ID}}/articles" class="card-footer-item">View Articles</a>
+            <a class="card-footer-item" 
+               hx-get="/feeds/{{.ID}}/articles?page=1"
+               hx-target="#content-area"
+               hx-push-url="true">
+                Articles
+            </a>
         </footer>
     </div>
 </div>
 {{end}}
 
-<div class="column is-12">
-    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-        <button class="pagination-previous" 
-                hx-get="/feeds?page={{subtract .CurrentPage 1}}"
-                hx-target="#feed-container"
-                {{if le .CurrentPage 1}}disabled{{end}}>Previous</button>
-        {{if lt .CurrentPage .TotalPages}}
-        <button class="pagination-next"
-                hx-get="/feeds?page={{add .CurrentPage 1}}"
-                hx-target="#feed-container">Next</button>
+<nav class="pagination is-centered" role="navigation" aria-label="pagination">
+    <a class="pagination-previous {{if eq .CurrentPage 1}}is-disabled{{end}}" 
+       {{if gt .CurrentPage 1}}
+       hx-get="/feeds?page={{subtract .CurrentPage 1}}"
+       hx-target="#feed-container"
+       {{end}}>
+       Previous
+    </a>
+    {{if lt .CurrentPage .TotalPages}}
+    <a class="pagination-next"
+       hx-get="/feeds?page={{add .CurrentPage 1}}"
+       hx-target="#feed-container">Next</a>
+    {{end}}
+    <ul class="pagination-list">
+        {{range .Pages}}
+        <li>
+            <a class="pagination-link {{if eq . $.CurrentPage}}is-current{{end}}"
+               hx-get="/feeds?page={{.}}"
+               hx-target="#feed-container">{{.}}</a>
+        </li>
         {{end}}
-        <ul class="pagination-list">
-            {{range $i := .Pages}}
-            <li>
-                <button class="pagination-link {{if eq $i $.CurrentPage}}is-current{{end}}"
-                        hx-get="/feeds?page={{$i}}"
-                        hx-target="#feed-container">{{$i}}</button>
-            </li>
-            {{end}}
-        </ul>
-    </nav>
-</div>
+    </ul>
+</nav>

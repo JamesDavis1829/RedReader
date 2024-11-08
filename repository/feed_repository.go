@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -18,6 +19,27 @@ type FeedRepository struct {
 func NewFeedRepository(client *mongo.Client) *FeedRepository {
 	collection := client.Database("redreader").Collection("feeds")
 	return &FeedRepository{collection: collection}
+}
+
+func (r *FeedRepository) GetFeed(id string) (*models.Feed, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, fmt.Errorf("invalid id format: %v", err)
+	}
+
+	var feed models.Feed
+	err = r.collection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&feed)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, fmt.Errorf("feed not found with id: %s", id)
+		}
+		return nil, err
+	}
+
+	return &feed, nil
 }
 
 func (r *FeedRepository) GetAllFeeds() ([]*models.Feed, error) {
