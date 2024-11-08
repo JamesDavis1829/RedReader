@@ -29,25 +29,23 @@
                         {{end}}
                     </p>
                 </div>
-                <nav class="level is-mobile">
-                    <div class="level-left">
-                        <a class="level-item" href="{{.URL}}" target="_blank">
-                            <span class="button is-small is-link">Read More</span>
-                        </a>
-                        {{if .HasViewableContent}}
-                        <a class="level-item">
-                            <span class="button is-small is-info" 
-                                  hx-get="/articles/{{.ID}}/content"
-                                  hx-target="#modal-container"
-                                  hx-trigger="click"
-                                  onclick="showModalContainer()">View</span>
-                        </a>
-                        <a class="level-item" href="/article/{{.ID}}" target="_blank">
-                            <span class="button is-small is-info">Direct Link</span>
-                        </a>
-                        {{end}}
-                    </div>
-                </nav>
+                <div class="buttons is-flex is-flex-wrap-nowrap">
+                    <a href="{{.URL}}" target="_blank">
+                        <span class="button is-small is-link">Read More</span>
+                    </a>
+                    {{if .HasViewableContent}}
+                    <a>
+                        <span class="button is-small is-info" 
+                              hx-get="/articles/{{.ID}}/content"
+                              hx-target="#modal-container"
+                              hx-trigger="click"
+                              onclick="showModalContainer()">View</span>
+                    </a>
+                    <a href="/article/{{.ID}}" target="_blank">
+                        <span class="button is-small is-info">Direct Link</span>
+                    </a>
+                    {{end}}
+                </div>
             </div>
         </article>
     </div>
