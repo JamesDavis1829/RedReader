@@ -2,7 +2,7 @@
     <div class="modal-background" onclick="closeModal()"></div>
     <div class="modal-card">
         <header class="modal-card-head">
-            <p class="modal-card-title">{{.Title}}</p>
+            <p class="modal-card-title text-ellipsis">{{.Title}}</p>
             <button class="delete" aria-label="close" onclick="closeModal()"></button>
         </header>
         <section class="modal-card-body">
@@ -16,3 +16,12 @@
         </footer>
     </div>
 </div>
+
+<style>
+.text-ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(100% - 2rem); /* Leave space for close button */
+}
+</style>
