@@ -34,12 +34,24 @@
                         <a class="level-item" href="{{.URL}}" target="_blank">
                             <span class="button is-small is-link">Read More</span>
                         </a>
+                        {{if .HasViewableContent}}
+                        <a class="level-item">
+                            <span class="button is-small is-info" 
+                                  hx-get="/articles/{{.ID}}/content"
+                                  hx-target="#modal-container"
+                                  hx-trigger="click"
+                                  onclick="showModalContainer()">View</span>
+                        </a>
+                        {{end}}
                     </div>
                 </nav>
             </div>
         </article>
     </div>
     {{end}}
+
+    <!-- Add a container for the modal -->
+    <div id="modal-container"></div>
 
     <nav class="pagination is-centered" role="navigation" aria-label="pagination">
         <a class="pagination-previous {{if eq .CurrentPage 1}}is-disabled{{end}}" 
@@ -68,3 +80,25 @@
         </ul>
     </nav>
 </div>
+
+<script>
+function openModal(modalId) {
+    document.getElementById(modalId).classList.add('is-active');
+    document.documentElement.classList.add('is-clipped');
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('is-active');
+    document.documentElement.classList.remove('is-clipped');
+}
+
+function showModalContainer() {
+    // The modal will be inserted into modal-container by HTMX
+    document.documentElement.classList.add('is-clipped');
+}
+
+function closeModal() {
+    document.documentElement.classList.remove('is-clipped');
+    document.getElementById('modal-container').innerHTML = '';
+}
+</script>

@@ -147,6 +147,16 @@ func main() {
 		})
 	})
 
+	// Add this new handler
+	e.GET("/articles/:id/content", func(c echo.Context) error {
+		articleId := c.Param("id")
+		article, err := articleRepo.GetArticleContent(articleId)
+		if err != nil {
+			return err
+		}
+		return c.Render(200, "article_modal.html", article)
+	})
+
 	e.GET("/index", func(c echo.Context) error {
 		return c.Redirect(301, "/")
 	})

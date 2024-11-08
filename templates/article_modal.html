@@ -1,0 +1,18 @@
+<div class="modal is-active">
+    <div class="modal-background" onclick="closeModal()"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">{{.Title}}</p>
+            <button class="delete" aria-label="close" onclick="closeModal()"></button>
+        </header>
+        <section class="modal-card-body">
+            <div class="content">
+                {{.ViewContent | safeHTML}}
+            </div>
+        </section>
+        <footer class="modal-card-foot">
+            <a href="{{.URL}}" target="_blank" class="button is-link mr-2">Read on Website</a>
+            <button class="button" onclick="closeModal()">Close</button>
+        </footer>
+    </div>
+</div>

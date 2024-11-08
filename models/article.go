@@ -56,3 +56,22 @@ func (a *Article) TruncatedDescription() string {
 	}
 	return strings.TrimSpace(a.Description[:297]) + "..."
 }
+
+func (a *Article) HasViewableContent() bool {
+	if a.Content != "" && a.Content != a.Description {
+		return true
+	}
+
+	if len(a.Description) > maxDescriptionLength {
+		return true
+	}
+
+	return false
+}
+
+func (a *Article) ViewContent() string {
+	if a.Content != "" && a.Content != a.Description {
+		return a.Content
+	}
+	return a.Description
+}

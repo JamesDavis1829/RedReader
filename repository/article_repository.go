@@ -65,3 +65,16 @@ func (r *ArticleRepository) GetPaginatedArticlesByFeed(feedId string, page, perP
 
 	return articles, total, nil
 }
+
+func (r *ArticleRepository) GetArticleContent(id string) (*models.Article, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var article models.Article
+	err := r.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&article)
+	if err != nil {
+		return nil, err
+	}
+
+	return &article, nil
+}
