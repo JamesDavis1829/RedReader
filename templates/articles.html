@@ -1,144 +1,82 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico">
-    <title>{{.Title}} - Articles</title>
-    <link rel="stylesheet" href="assets/css/bulma.min.css">
-    <script src="assets/js/htmx.min.js"></script>
-</head>
+<div class="container">
+    <h1 class="title">All Articles</h1>
 
-<body>
-    <nav class="navbar" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
-            <a class="navbar-item" href="/">
-                <img src="/assets/img/RedReaderLogo.png" alt="Red Reader Logo">
-                <strong>{{.Title}}</strong>
-            </a>
-
-            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasic">
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-            </a>
-        </div>
-
-        <div id="navbarBasic" class="navbar-menu">
-            <div class="navbar-start">
-                <a class="navbar-item" href="/">Home</a>
-                <a class="navbar-item" href="/articles">Articles</a>
-                <a class="navbar-item">Settings</a>
-            </div>
-
-            <div class="navbar-end">
-                <div class="navbar-item">
-                    <div class="buttons">
-                        {{if .User}}
-                        <span class="navbar-item">Welcome, {{.User.Name}}</span>
-                        <a href="/logout" class="button is-light">Log out</a>
-                        {{else}}
-                        <a class="button is-primary" href="/login">Sign up</a>
-                        <a class="button is-light" href="/login">Log in</a>
+    {{range .Articles}}
+    <div class="box">
+        <article class="media">
+            <div class="media-content">
+                <div class="content">
+                    <p>
+                        <strong>{{.Title}}</strong>
+                        {{if .Author}}<small>by {{.Author}}</small>{{end}}
+                        <small>{{.PublishedAt.Format "Jan 02, 2006"}}</small>
+                        {{if .ShouldShowDescription}}
+                        <br>
+                        {{.TruncatedDescription | safeHTML}}
+                        {{end}}
+                    </p>
+                </div>
+                <nav class="level is-mobile">
+                    <div class="level-left">
+                        <a class="level-item" href="{{.URL}}" target="_blank">
+                            <span class="button is-small is-link">Read More</span>
+                        </a>
+                        {{if .HasViewableContent}}
+                        <a class="level-item">
+                            <span class="button is-small is-info" hx-get="/articles/{{.ID}}/content"
+                                hx-target="#modal-container" hx-trigger="click"
+                                onclick="showModalContainer()">View</span>
+                        </a>
                         {{end}}
                     </div>
-                </div>
+                </nav>
             </div>
-        </div>
-    </nav>
-    
-    <section class="section">
-        <div class="container">
-            <h1 class="title">{{.Title | safeHTML}}</h1>
-            <p class="subtitle">{{.Subtitle | safeHTML}}</p>
-        </div>
-    </section>
-
-    <div class="container">
-        <h1 class="title">All Articles</h1>
-        
-        {{range .Articles}}
-        <div class="box">
-            <article class="media">
-                <div class="media-content">
-                    <div class="content">
-                        <p>
-                            <strong>{{.Title}}</strong>
-                            {{if .Author}}<small>by {{.Author}}</small>{{end}}
-                            <small>{{.PublishedAt.Format "Jan 02, 2006"}}</small>
-                            {{if .ShouldShowDescription}}
-                                <br>
-                                {{.TruncatedDescription | safeHTML}}
-                            {{end}}
-                        </p>
-                    </div>
-                    <nav class="level is-mobile">
-                        <div class="level-left">
-                            <a class="level-item" href="{{.URL}}" target="_blank">
-                                <span class="button is-small is-link">Read More</span>
-                            </a>
-                            {{if .HasViewableContent}}
-                            <a class="level-item">
-                                <span class="button is-small is-info" 
-                                      hx-get="/articles/{{.ID}}/content"
-                                      hx-target="#modal-container"
-                                      hx-trigger="click"
-                                      onclick="showModalContainer()">View</span>
-                            </a>
-                            {{end}}
-                        </div>
-                    </nav>
-                </div>
-            </article>
-        </div>
-        {{end}}
-    
-        <!-- Add a container for the modal -->
-        <div id="modal-container"></div>
-    
-        <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-            <a class="pagination-previous {{if eq .CurrentPage 1}}is-disabled{{end}}" 
-               {{if gt .CurrentPage 1}}
-               href="/articles?page={{subtract .CurrentPage 1}}"
-               {{end}}>
-               Previous
-            </a>
-            <a class="pagination-next {{if eq .CurrentPage .TotalPages}}is-disabled{{end}}"
-               {{if lt .CurrentPage .TotalPages}} 
-               href="/articles?page={{add .CurrentPage 1}}"
-               {{end}}>
-               Next
-            </a>
-            <ul class="pagination-list">
-                {{range .Pages}}
-                <li>
-                    <a class="pagination-link {{if eq . $.CurrentPage}}is-current{{end}}"
-                       href="/articles?page={{.}}">{{.}}</a>
-                </li>
-                {{end}}
-            </ul>
-        </nav>
+        </article>
     </div>
-    
-    <script>
+    {{end}}
+
+    <!-- Add a container for the modal -->
+    <div id="modal-container"></div>
+
+    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+        <a class="pagination-previous {{if eq .CurrentPage 1}}is-disabled{{end}}" {{if gt .CurrentPage 1}}
+            hx-get="/articles?page={{subtract .CurrentPage 1}}" hx-target="#content-area"
+            onclick="delayedSmoothScroll('#content-area')" {{end}}>
+            Previous
+        </a>
+        <a class="pagination-next {{if eq .CurrentPage .TotalPages}}is-disabled{{end}}" {{if lt .CurrentPage
+            .TotalPages}} hx-get="/articles?page={{add .CurrentPage 1}}" hx-target="#content-area"
+            onclick="delayedSmoothScroll('#content-area')" {{end}}>
+            Next
+        </a>
+        <ul class="pagination-list">
+            {{range .Pages}}
+            <li>
+                <a class="pagination-link {{if eq . $.CurrentPage}}is-current{{end}}" hx-get="/articles?page={{.}}"
+                    hx-target="#content-area" onclick="delayedSmoothScroll('#content-area')">{{.}}</a>
+            </li>
+            {{end}}
+        </ul>
+    </nav>
+</div>
+
+<script>
     function openModal(modalId) {
         document.getElementById(modalId).classList.add('is-active');
         document.documentElement.classList.add('is-clipped');
     }
-    
+
     function closeModal(modalId) {
         document.getElementById(modalId).classList.remove('is-active');
         document.documentElement.classList.remove('is-clipped');
     }
-    
+
     function showModalContainer() {
         document.documentElement.classList.add('is-clipped');
     }
-    
+
     function closeModal() {
         document.documentElement.classList.remove('is-clipped');
         document.getElementById('modal-container').innerHTML = '';
     }
-    </script>
-</body>
-</html>
+</script>

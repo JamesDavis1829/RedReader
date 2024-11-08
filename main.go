@@ -166,9 +166,6 @@ func main() {
 		user := c.Get("user")
 
 		return c.Render(200, "articles.html", map[string]interface{}{
-			"Title":       "Articles",
-			"Header":      "Your Articles",
-			"Subtitle":    "In Reverse Chronological Order",
 			"Articles":    articles,
 			"CurrentPage": page,
 			"TotalPages":  totalPages,
