@@ -23,8 +23,10 @@
                         <strong>{{.Title}}</strong>
                         {{if .Author}}<small>by {{.Author}}</small>{{end}}
                         <small>{{.PublishedAt.Format "Jan 02, 2006"}}</small>
-                        <br>
-                        {{.Description | safeHTML}}
+                        {{if .ShouldShowDescription}}
+                            <br>
+                            {{.TruncatedDescription | safeHTML}}
+                        {{end}}
                     </p>
                 </div>
                 <nav class="level is-mobile">
