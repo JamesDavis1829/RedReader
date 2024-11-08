@@ -94,11 +94,7 @@ func main() {
 			return err
 		}
 
-		totalPages := int64(math.Ceil(float64(total) / float64(perPage)))
-		pages := make([]int64, totalPages)
-		for i := int64(0); i < totalPages; i++ {
-			pages[i] = i + 1
-		}
+		pages, totalPages := calculatePages(total, perPage, page)
 
 		return c.Render(200, "feed_list.html", map[string]interface{}{
 			"Feeds":       feeds,
@@ -131,11 +127,7 @@ func main() {
 			return err
 		}
 
-		totalPages := int64(math.Ceil(float64(total) / float64(perPage)))
-		pages := make([]int64, totalPages)
-		for i := int64(0); i < totalPages; i++ {
-			pages[i] = i + 1
-		}
+		pages, totalPages := calculatePages(total, perPage, page)
 
 		return c.Render(200, "article_list.html", map[string]interface{}{
 			"Feed":        feed,
@@ -157,6 +149,34 @@ func main() {
 		return c.Render(200, "article_modal.html", article)
 	})
 
+	e.GET("/articles", func(c echo.Context) error {
+		page, _ := strconv.ParseInt(c.QueryParam("page"), 10, 64)
+		if page < 1 {
+			page = 1
+		}
+		perPage := int64(20) // Show 20 articles per page
+
+		articles, total, err := articleRepo.GetPaginatedArticles(page, perPage)
+		if err != nil {
+			return err
+		}
+
+		pages, totalPages := calculatePages(total, perPage, page)
+
+		user := c.Get("user")
+
+		return c.Render(200, "articles.html", map[string]interface{}{
+			"Title":       "Articles",
+			"Header":      "Your Articles",
+			"Subtitle":    "In Reverse Chronological Order",
+			"Articles":    articles,
+			"CurrentPage": page,
+			"TotalPages":  totalPages,
+			"Pages":       pages,
+			"User":        user,
+		})
+	})
+
 	e.GET("/index", func(c echo.Context) error {
 		return c.Redirect(301, "/")
 	})
@@ -174,4 +194,31 @@ func main() {
 	})
 
 	e.Logger.Fatal(e.Start(":1323"))
+}
+
+func calculatePages(total int64, perPage int64, page int64) ([]int64, int64) {
+	totalPages := int64(math.Ceil(float64(total) / float64(perPage)))
+
+	// Calculate window start and end
+	windowStart := page - 5
+	if windowStart < 1 {
+		windowStart = 1
+	}
+	windowEnd := windowStart + 10
+	if windowEnd > totalPages {
+		windowEnd = totalPages
+	}
+
+	// Create slice for visible pages
+	var pages []int64
+	for i := windowStart; i <= windowEnd; i++ {
+		pages = append(pages, i)
+	}
+
+	// Add last page if not in window
+	if totalPages > windowEnd {
+		pages = append(pages, totalPages)
+	}
+
+	return pages, totalPages
 }

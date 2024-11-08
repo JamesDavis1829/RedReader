@@ -78,3 +78,33 @@ func (r *ArticleRepository) GetArticleContent(id string) (*models.Article, error
 
 	return &article, nil
 }
+
+func (r *ArticleRepository) GetPaginatedArticles(page, perPage int64) ([]*models.Article, int64, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	skip := (page - 1) * perPage
+
+	total, err := r.collection.CountDocuments(ctx, bson.M{})
+	if err != nil {
+		return nil, 0, err
+	}
+
+	findOptions := options.Find().
+		SetSort(bson.D{{Key: "publishedAt", Value: -1}}).
+		SetSkip(skip).
+		SetLimit(perPage)
+
+	cursor, err := r.collection.Find(ctx, bson.M{}, findOptions)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer cursor.Close(ctx)
+
+	var articles []*models.Article
+	if err = cursor.All(ctx, &articles); err != nil {
+		return nil, 0, err
+	}
+
+	return articles, total, nil
+}
