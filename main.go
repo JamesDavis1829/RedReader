@@ -36,7 +36,6 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 		return renderTemplates.ExecuteTemplate(w, name, data)
 	}
 
-	// Parse base template first
 	if isHtmx {
 		renderTemplates, err = renderTemplates.ParseFiles("templates/base_htmx.html")
 	} else {
@@ -85,13 +84,11 @@ func main() {
 	}
 	e.Renderer = t
 
-	// Initialize repositories
 	mongoClient := db.NewMongoClient()
 	userRepo := repository.NewUserRepository(mongoClient)
 	feedRepo := repository.NewFeedRepository(mongoClient)
 	articleRepo := repository.NewArticleRepository(mongoClient)
 
-	// Initialize and start background worker
 	backgroundWorker := worker.NewBackgroundWorker(feedRepo, articleRepo)
 	backgroundWorker.Start()
 	defer backgroundWorker.Stop()
@@ -112,13 +109,12 @@ func main() {
 		return c.Render(200, "index.html", data)
 	})
 
-	// Update feeds handler with pagination
 	e.GET("/feeds", func(c echo.Context) error {
 		page, _ := strconv.ParseInt(c.QueryParam("page"), 10, 64)
 		if page < 1 {
 			page = 1
 		}
-		perPage := int64(9) // Show 9 feeds per page
+		perPage := int64(18)
 
 		feeds, total, err := feedRepo.GetPaginatedFeeds(page, perPage)
 		if err != nil {
@@ -234,7 +230,6 @@ func main() {
 func calculatePages(total int64, perPage int64, page int64) ([]int64, int64) {
 	totalPages := int64(math.Ceil(float64(total) / float64(perPage)))
 
-	// Calculate window start and end
 	windowStart := page - 5
 	if windowStart < 1 {
 		windowStart = 1
