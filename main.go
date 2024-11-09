@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"io"
 	"math"
@@ -17,11 +18,43 @@ import (
 )
 
 type Template struct {
-	templates *template.Template
+	templateFuncs template.FuncMap
 }
 
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
-	return t.templates.ExecuteTemplate(w, name, data)
+	var err error
+	renderTemplates := template.New("").Funcs(t.templateFuncs)
+	isHtmx := c.Request().Header.Get("HX-Request") == "true"
+
+	//Special Case for the Direct Link to Article
+	if name == "article_view.html" {
+		renderTemplates, err := renderTemplates.ParseFiles("templates/article_view.html")
+		if err != nil {
+			return fmt.Errorf("failed to parse content template: %v", err)
+		}
+		return renderTemplates.ExecuteTemplate(w, name, data)
+	}
+
+	// Parse base template first
+	if isHtmx {
+		renderTemplates, err = renderTemplates.ParseFiles("templates/base_htmx.html")
+	} else {
+		renderTemplates, err = renderTemplates.ParseFiles("templates/base.html")
+	}
+	if err != nil {
+		return fmt.Errorf("failed to parse base template: %v", err)
+	}
+
+	renderTemplates, err = renderTemplates.ParseFiles("templates/" + name)
+	if err != nil {
+		return fmt.Errorf("failed to parse content template: %v", err)
+	}
+
+	if isHtmx {
+		return renderTemplates.ExecuteTemplate(w, "base_htmx.html", data)
+	}
+
+	return renderTemplates.ExecuteTemplate(w, "base.html", data)
 }
 
 type PageData struct {
@@ -41,11 +74,11 @@ func main() {
 	e := echo.New()
 
 	t := &Template{
-		templates: template.Must(template.New("").Funcs(template.FuncMap{
+		templateFuncs: template.FuncMap{
 			"subtract": func(a, b int64) int64 { return a - b },
 			"add":      func(a, b int64) int64 { return a + b },
 			"safeHTML": func(s string) template.HTML { return template.HTML(s) },
-		}).ParseGlob("templates/*.html")),
+		},
 	}
 	e.Renderer = t
 

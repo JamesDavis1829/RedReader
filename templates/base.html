@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico">
+    <title>{{.Title}}</title>
+    <link rel="stylesheet" href="/assets/css/bulma.min.css">
+    <script src="/assets/js/htmx.min.js"></script>
+</head>
+
+<body>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="/">
+                <img src="/assets/img/RedReaderLogo.png" alt="Red Reader Logo">
+                <strong>{{.Title}}</strong>
+            </a>
+
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasic">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+
+        <div id="navbarBasic" class="navbar-menu">
+            <div class="navbar-start">
+                <a class="navbar-item" href="/">Feeds</a>
+                <a class="navbar-item" hx-get="/articles" hx-target="#content-area">Articles</a>
+                <a class="navbar-item">Settings</a>
+            </div>
+
+            <div class="navbar-end">
+                <div class="navbar-item">
+                    <div class="buttons">
+                        {{if .User}}
+                        <span class="navbar-item">Welcome, {{.User.Name}}</span>
+                        <a href="/logout" class="button is-light">Log out</a>
+                        {{else}}
+                        <a class="button is-primary" href="/login">Sign up</a>
+                        <a class="button is-light" href="/login">Log in</a>
+                        {{end}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <section class="section">
+        <div class="container" id="page-title">
+            <div id="content-area">
+                {{block "content" .}}
+                {{end}}
+            </div>
+        </div>
+    </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+            $navbarBurgers.forEach(el => {
+                el.addEventListener('click', () => {
+                    const target = el.dataset.target;
+                    const $target = document.getElementById(target);
+                    el.classList.toggle('is-active');
+                    $target.classList.toggle('is-active');
+                });
+            });
+        });
+
+        function delayedSmoothScroll(target, timeout = 50) {
+            setTimeout(() => {
+                document.querySelector(target).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }, timeout);
+        }
+    </script>
+</body>
+
+</html>
