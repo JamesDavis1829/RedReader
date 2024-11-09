@@ -104,7 +104,6 @@ func main() {
 		})
 	})
 
-	// Add this new handler
 	e.GET("/feeds/:id/articles", func(c echo.Context) error {
 		feedId := c.Param("id")
 		page, _ := strconv.ParseInt(c.QueryParam("page"), 10, 64)
@@ -115,7 +114,7 @@ func main() {
 		if feedPage < 1 {
 			feedPage = 1
 		}
-		perPage := int64(10) // Show 10 articles per page
+		perPage := int64(10)
 
 		feed, err := feedRepo.GetFeed(feedId)
 		if err != nil {
@@ -139,7 +138,6 @@ func main() {
 		})
 	})
 
-	// Add this new handler
 	e.GET("/articles/:id/content", func(c echo.Context) error {
 		articleId := c.Param("id")
 		article, err := articleRepo.GetArticleContent(articleId)
@@ -154,7 +152,7 @@ func main() {
 		if page < 1 {
 			page = 1
 		}
-		perPage := int64(20) // Show 20 articles per page
+		perPage := int64(20)
 
 		articles, total, err := articleRepo.GetPaginatedArticles(page, perPage)
 		if err != nil {
@@ -215,13 +213,11 @@ func calculatePages(total int64, perPage int64, page int64) ([]int64, int64) {
 		windowEnd = totalPages
 	}
 
-	// Create slice for visible pages
 	var pages []int64
 	for i := windowStart; i <= windowEnd; i++ {
 		pages = append(pages, i)
 	}
 
-	// Add last page if not in window
 	if totalPages > windowEnd {
 		pages = append(pages, totalPages)
 	}
