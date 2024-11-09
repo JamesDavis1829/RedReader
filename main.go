@@ -25,6 +25,7 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 	var err error
 	renderTemplates := template.New("").Funcs(t.templateFuncs)
 	isHtmx := c.Request().Header.Get("HX-Request") == "true"
+	addUserToData(c, data)
 
 	//Special Case for the Direct Link to Article
 	if name == "article_view.html" {
@@ -57,11 +58,13 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 	return renderTemplates.ExecuteTemplate(w, "base.html", data)
 }
 
-type PageData struct {
-	Title    string
-	Header   string
-	Subtitle string
-	User     *models.User
+func addUserToData(c echo.Context, data interface{}) {
+	if user := c.Get("user"); user != nil {
+		if mapData, ok := data.(map[string]interface{}); ok {
+			mapData["User"] = user.(*models.User)
+			return
+		}
+	}
 }
 
 func main() {
@@ -101,16 +104,11 @@ func main() {
 	e.Pre(authMiddleware.AttachUser)
 
 	e.GET("/", func(c echo.Context) error {
-		data := PageData{
-			Title:    "Red Reader",
-			Header:   "Your Feeds",
-			Subtitle: "Stay updated with your favorite content",
+		data := map[string]interface{}{
+			"Title":    "Red Reader",
+			"Header":   "Your Feeds",
+			"Subtitle": "Stay updated with your favorite content",
 		}
-
-		if user := c.Get("user"); user != nil {
-			data.User = user.(*models.User)
-		}
-
 		return c.Render(200, "index.html", data)
 	})
 
