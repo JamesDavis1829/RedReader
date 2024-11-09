@@ -21,21 +21,21 @@
         {{end}}
     </div>
 
-    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-        <a class="pagination-previous {{if eq .CurrentPage 1}}is-disabled{{end}}" 
-           {{if gt .CurrentPage 1}}
+    <div class="pagination is-centered" role="navigation" aria-label="pagination">
+        <a class="pagination-previous" 
+           {{if le .CurrentPage 1}}disabled{{end}}
            hx-get="/feeds?page={{subtract .CurrentPage 1}}"
            hx-target="#feed-list"
-           onclick="delayedSmoothScroll('#page-title')"
-           {{end}}>
+           onclick="delayedSmoothScroll('#page-title')">
            Previous
         </a>
-        {{if lt .CurrentPage .TotalPages}}
         <a class="pagination-next"
+           {{if ge .CurrentPage .TotalPages}}disabled{{end}}
            hx-get="/feeds?page={{add .CurrentPage 1}}"
-           hx-target="#feed-list"
-           onclick="delayedSmoothScroll('#page-title')">Next</a>
-        {{end}}
+           hx-target="#feed-list" 
+           onclick="delayedSmoothScroll('#page-title')">
+           Next
+        </a>
         <ul class="pagination-list">
             {{range .Pages}}
             <li>
@@ -46,5 +46,5 @@
             </li>
             {{end}}
         </ul>
-    </nav>
+    </div>
 </div>
