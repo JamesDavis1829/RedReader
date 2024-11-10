@@ -27,6 +27,7 @@
            {{if le .CurrentPage 1}}disabled{{end}}
            hx-get="/feeds?page={{subtract .CurrentPage 1}}"
            hx-target="#feed-list"
+           hx-push-url="true"
            onclick="delayedSmoothScroll('#page-title')">
            Previous
         </a>
@@ -34,6 +35,7 @@
            {{if ge .CurrentPage .TotalPages}}disabled{{end}}
            hx-get="/feeds?page={{add .CurrentPage 1}}"
            hx-target="#feed-list" 
+           hx-push-url="true"
            onclick="delayedSmoothScroll('#page-title')">
            Next
         </a>
@@ -43,6 +45,7 @@
                 <a class="pagination-link {{if eq . $.CurrentPage}}is-current{{end}}"
                    hx-get="/feeds?page={{.}}"
                    hx-target="#feed-list"
+                   hx-push-url="true"
                    onclick="delayedSmoothScroll('#page-title')">{{.}}</a>
             </li>
             {{end}}

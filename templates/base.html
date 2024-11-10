@@ -27,8 +27,14 @@
 
         <div id="navbarBasic" class="navbar-menu">
             <div class="navbar-start">
-                <a class="navbar-item" hx-get="/feeds" hx-target="#content-area">Feeds</a>
-                <a class="navbar-item" hx-get="/articles" hx-target="#content-area">Articles</a>
+                <a class="navbar-item" 
+                   hx-get="/feeds" 
+                   hx-target="#content-area"
+                   hx-push-url="true">Feeds</a>
+                <a class="navbar-item" 
+                   hx-get="/articles" 
+                   hx-target="#content-area"
+                   hx-push-url="true">Articles</a>
                 <a class="navbar-item">Settings</a>
             </div>
 
