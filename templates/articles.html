@@ -20,7 +20,7 @@
                 </div>
                 <div class="buttons is-flex is-flex-wrap-nowrap">
                     <a href="{{.URL}}" target="_blank">
-                        <span class="button is-small is-link">Read More</span>
+                        <span class="button is-small is-link">Original Article</span>
                     </a>
                     {{if .HasViewableContent}}
                     <a>
@@ -28,10 +28,10 @@
                               hx-get="/articles/{{.ID}}/content"
                               hx-target="#modal-container"
                               hx-trigger="click"
-                              onclick="showModalContainer()">View</span>
+                              onclick="showModalContainer()">Quick View</span>
                     </a>
                     <a href="/article/{{.ID}}" target="_blank">
-                        <span class="button is-small is-info">Direct Link</span>
+                        <span class="button is-small is-info">Share</span>
                     </a>
                     {{end}}
                 </div>
