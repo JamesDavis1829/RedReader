@@ -1,9 +1,11 @@
 package main
 
 import (
+	"embed"
 	"fmt"
 	"html/template"
 	"io"
+	"io/fs"
 	"math"
 	"strconv"
 
@@ -17,6 +19,12 @@ import (
 	"redapplications.com/redreader/worker"
 )
 
+//go:embed templates/*
+var templateFs embed.FS
+
+//go:embed assets/*
+var assetFs embed.FS
+
 type Template struct {
 	templateFuncs template.FuncMap
 }
@@ -29,7 +37,7 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 
 	//Special Case for the Direct Link to Article
 	if name == "article_view.html" {
-		renderTemplates, err := renderTemplates.ParseFiles("templates/article_view.html")
+		renderTemplates, err := renderTemplates.ParseFS(templateFs, "templates/article_view.html")
 		if err != nil {
 			return fmt.Errorf("failed to parse content template: %v", err)
 		}
@@ -37,15 +45,15 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 	}
 
 	if isHtmx {
-		renderTemplates, err = renderTemplates.ParseFiles("templates/base_htmx.html")
+		renderTemplates, err = renderTemplates.ParseFS(templateFs, "templates/base_htmx.html")
 	} else {
-		renderTemplates, err = renderTemplates.ParseFiles("templates/base.html")
+		renderTemplates, err = renderTemplates.ParseFS(templateFs, "templates/base.html")
 	}
 	if err != nil {
 		return fmt.Errorf("failed to parse base template: %v", err)
 	}
 
-	renderTemplates, err = renderTemplates.ParseFiles("templates/" + name)
+	renderTemplates, err = renderTemplates.ParseFS(templateFs, "templates/"+name)
 	if err != nil {
 		return fmt.Errorf("failed to parse content template: %v", err)
 	}
@@ -95,7 +103,12 @@ func main() {
 
 	userRepo.CreateIndex()
 
-	e.Static("/assets", "assets")
+	assets, err := fs.Sub(assetFs, "assets")
+	if err != nil {
+		panic(err)
+	}
+
+	e.StaticFS("/assets", assets)
 
 	authMiddleware := middleware.NewAuthMiddleware(userRepo)
 	e.Pre(authMiddleware.AttachUser)
