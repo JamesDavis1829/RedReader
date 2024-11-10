@@ -15,7 +15,7 @@
         <div class="navbar-brand">
             <a class="navbar-item" href="/">
                 <img src="/assets/img/RedReaderLogo.png" alt="Red Reader Logo">
-                <strong>{{.Title}}</strong>
+                <strong>Red Reader</strong>
             </a>
 
             <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasic">
@@ -57,15 +57,17 @@
     </section>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
-            $navbarBurgers.forEach(el => {
-                el.addEventListener('click', () => {
-                    const target = el.dataset.target;
-                    const $target = document.getElementById(target);
-                    el.classList.toggle('is-active');
-                    $target.classList.toggle('is-active');
+            setTimeout(() => {
+                const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+                $navbarBurgers.forEach(el => {
+                    el.addEventListener('click', () => {
+                        const target = el.dataset.target;
+                        const $target = document.getElementById(target);
+                        el.classList.toggle('is-active');
+                        $target.classList.toggle('is-active');
+                    });
                 });
-            });
+            }, 50);
         });
 
         function delayedSmoothScroll(target, timeout = 50) {
@@ -88,6 +90,7 @@
             --bulma-success-h: 53deg;
             --bulma-success-s: 100%;
             --bulma-success-l: 97%;
+            --bulma-primary-invert-l: 98%;
         }
     </style>
 </body>
