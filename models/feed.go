@@ -7,11 +7,12 @@ import (
 )
 
 type Feed struct {
-	ID          string    `json:"id" bson:"_id"`
-	URL         string    `json:"url" bson:"url"`
-	Title       string    `json:"title" bson:"title"`
-	Description string    `json:"description" bson:"description"`
-	LastFetched time.Time `json:"lastFetched" bson:"lastFetched"`
+	ID           string    `json:"id" bson:"_id"`
+	URL          string    `json:"url" bson:"url"`
+	Title        string    `json:"title" bson:"title"`
+	Description  string    `json:"description" bson:"description"`
+	LastFetched  time.Time `json:"lastFetched" bson:"lastFetched"`
+	IsSubscribed bool      `json:"isSubscribed" bson:"-"`
 }
 
 func NewFeed(url string) *Feed {

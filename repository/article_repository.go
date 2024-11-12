@@ -135,6 +135,103 @@ func (r *ArticleRepository) GetPaginatedArticles(page, perPage int64) ([]*Articl
 	return articles, total, nil
 }
 
+func (r *ArticleRepository) GetPaginatedArticlesForUser(user *models.User, page, perPage int64) ([]*ArticleWithFeed, int64, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// If user has no subscriptions, return empty result
+	if len(user.SubscribedTo) == 0 {
+		return []*ArticleWithFeed{}, 0, nil
+	}
+
+	skip := (page - 1) * perPage
+	matchStage := bson.M{
+		"$match": bson.M{
+			"feedId": bson.M{
+				"$in": user.SubscribedTo,
+			},
+		},
+	}
+
+	// Count total matching documents
+	countPipeline := []bson.M{
+		matchStage,
+		{
+			"$count": "total",
+		},
+	}
+
+	countCursor, err := r.collection.Aggregate(ctx, countPipeline)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer countCursor.Close(ctx)
+
+	var countResult []struct{ Total int64 }
+	if err = countCursor.All(ctx, &countResult); err != nil {
+		return nil, 0, err
+	}
+
+	total := int64(0)
+	if len(countResult) > 0 {
+		total = countResult[0].Total
+	}
+
+	// Get paginated articles
+	pipeline := []bson.M{
+		matchStage,
+		{
+			"$lookup": bson.M{
+				"from": "feeds",
+				"let":  bson.M{"feedId": "$feedId"},
+				"pipeline": []bson.M{
+					{
+						"$match": bson.M{
+							"$expr": bson.M{
+								"$eq": []interface{}{
+									"$_id",
+									bson.M{"$toObjectId": "$$feedId"},
+								},
+							},
+						},
+					},
+				},
+				"as": "feed",
+			},
+		},
+		{
+			"$unwind": "$feed",
+		},
+		{
+			"$addFields": bson.M{
+				"feedTitle": "$feed.title",
+			},
+		},
+		{
+			"$sort": bson.M{"publishedAt": -1},
+		},
+		{
+			"$skip": skip,
+		},
+		{
+			"$limit": perPage,
+		},
+	}
+
+	cursor, err := r.collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer cursor.Close(ctx)
+
+	var articles []*ArticleWithFeed
+	if err = cursor.All(ctx, &articles); err != nil {
+		return nil, 0, err
+	}
+
+	return articles, total, nil
+}
+
 func (r *ArticleRepository) GetArticleContent(id string) (*ArticleWithFeed, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

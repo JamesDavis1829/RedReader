@@ -2,20 +2,31 @@
 <div id="feed-list">
     <div class="columns is-multiline">
         {{range .Feeds}}
-        <div class="column is-one-third">
+        <div class="column is-one-third" id="feed-{{.ID}}">
             <div class="card">
                 <div class="card-content">
-                    <p class="title is-4">{{.Title}}</p>
+                    <p class="title is-5">{{.Title}}</p>
                     <p class="subtitle is-6">{{.Description}}</p>
                 </div>
                 <footer class="card-footer">
-                    <a class="card-footer-item" 
-                       hx-get="/feeds/{{.ID}}/articles?page=1&feedPage={{$.CurrentPage}}"
-                       hx-target="#content-area"
-                       hx-swap="innerHTML show:window:top"
-                       hx-push-url="true">
-                        Articles
-                    </a>
+                    <a href="/feeds/{{.ID}}/articles" class="card-footer-item">View Articles</a>
+                    {{if $.User}}
+                        {{if .IsSubscribed}}
+                        <a href="#" class="card-footer-item has-text-danger"
+                           hx-delete="/feeds/{{.ID}}/subscribe"
+                           hx-target="#feed-{{.ID}}"
+                           hx-swap="outerHTML">
+                            Unsubscribe
+                        </a>
+                        {{else}}
+                        <a href="#" class="card-footer-item has-text-primary"
+                           hx-post="/feeds/{{.ID}}/subscribe"
+                           hx-target="#feed-{{.ID}}"
+                           hx-swap="outerHTML">
+                            Subscribe
+                        </a>
+                        {{end}}
+                    {{end}}
                 </footer>
             </div>
         </div>

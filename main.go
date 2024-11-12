@@ -122,6 +122,7 @@ func main() {
 		return c.Render(200, "index.html", data)
 	})
 
+	// Update the /feeds route to include subscription status
 	e.GET("/feeds", func(c echo.Context) error {
 		page, _ := strconv.ParseInt(c.QueryParam("page"), 10, 64)
 		if page < 1 {
@@ -134,8 +135,12 @@ func main() {
 			return err
 		}
 
-		pages, totalPages := calculatePages(total, perPage, page)
+		// Add subscription status if user is logged in
+		if user := c.Get("user"); user != nil {
+			feedRepo.AddSubscriptionStatus(feeds, user.(*models.User).SubscribedTo)
+		}
 
+		pages, totalPages := calculatePages(total, perPage, page)
 		return c.Render(200, "feed_list.html", map[string]interface{}{
 			"Feeds":       feeds,
 			"CurrentPage": page,
@@ -194,14 +199,22 @@ func main() {
 		}
 		perPage := int64(20)
 
-		articles, total, err := articleRepo.GetPaginatedArticles(page, perPage)
+		var articles []*repository.ArticleWithFeed
+		var total int64
+		var err error
+
+		user := c.Get("user")
+		if user != nil {
+			articles, total, err = articleRepo.GetPaginatedArticlesForUser(user.(*models.User), page, perPage)
+		} else {
+			articles, total, err = articleRepo.GetPaginatedArticles(page, perPage)
+		}
+
 		if err != nil {
 			return err
 		}
 
 		pages, totalPages := calculatePages(total, perPage, page)
-
-		user := c.Get("user")
 
 		return c.Render(200, "articles.html", map[string]interface{}{
 			"Articles":    articles,
@@ -235,6 +248,41 @@ func main() {
 			return err
 		}
 		return c.Render(200, "article_view.html", article)
+	})
+
+	// Add subscribe/unsubscribe routes
+	e.POST("/feeds/:id/subscribe", func(c echo.Context) error {
+		user := c.Get("user").(*models.User)
+		feedId := c.Param("id")
+
+		if err := userRepo.SubscribeToFeed(user.ID, feedId); err != nil {
+			return err
+		}
+
+		feed, err := feedRepo.GetFeed(feedId)
+		if err != nil {
+			return err
+		}
+		feed.IsSubscribed = true
+
+		return c.Render(200, "feed_card.html", feed)
+	})
+
+	e.DELETE("/feeds/:id/subscribe", func(c echo.Context) error {
+		user := c.Get("user").(*models.User)
+		feedId := c.Param("id")
+
+		if err := userRepo.UnsubscribeFromFeed(user.ID, feedId); err != nil {
+			return err
+		}
+
+		feed, err := feedRepo.GetFeed(feedId)
+		if err != nil {
+			return err
+		}
+		feed.IsSubscribed = false
+
+		return c.Render(200, "feed_card.html", feed)
 	})
 
 	e.Logger.Fatal(e.Start(":1323"))

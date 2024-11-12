@@ -86,3 +86,43 @@ func (r *UserRepository) GetUserByToken(token string) (*models.User, error) {
 	err := r.collection.FindOne(ctx, bson.M{"tokens": token}).Decode(user)
 	return user, err
 }
+
+func (r *UserRepository) SubscribeToFeed(userId string, feedId string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	result, err := r.collection.UpdateOne(
+		ctx,
+		bson.M{"id": userId},
+		bson.M{"$addToSet": bson.M{"subscribedTo": feedId}},
+	)
+	if err != nil {
+		return err
+	}
+
+	if result.MatchedCount == 0 {
+		return mongo.ErrNoDocuments
+	}
+
+	return nil
+}
+
+func (r *UserRepository) UnsubscribeFromFeed(userId string, feedId string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	result, err := r.collection.UpdateOne(
+		ctx,
+		bson.M{"id": userId},
+		bson.M{"$pull": bson.M{"subscribedTo": feedId}},
+	)
+	if err != nil {
+		return err
+	}
+
+	if result.MatchedCount == 0 {
+		return mongo.ErrNoDocuments
+	}
+
+	return nil
+}

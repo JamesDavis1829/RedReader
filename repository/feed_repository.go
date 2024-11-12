@@ -114,3 +114,41 @@ func (r *FeedRepository) GetPaginatedFeeds(page, perPage int64) ([]*models.Feed,
 
 	return feeds, total, nil
 }
+
+func (r *FeedRepository) GetFeedsByIds(ids []string) ([]*models.Feed, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	objectIds := make([]primitive.ObjectID, 0)
+	for _, id := range ids {
+		objID, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			continue
+		}
+		objectIds = append(objectIds, objID)
+	}
+
+	cursor, err := r.collection.Find(ctx, bson.M{"_id": bson.M{"$in": objectIds}})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var feeds []*models.Feed
+	if err = cursor.All(ctx, &feeds); err != nil {
+		return nil, err
+	}
+	return feeds, nil
+}
+
+// Add this helper method to check if a feed is in a subscription list
+func (r *FeedRepository) AddSubscriptionStatus(feeds []*models.Feed, subscribedIds []string) {
+	subscribedMap := make(map[string]bool)
+	for _, id := range subscribedIds {
+		subscribedMap[id] = true
+	}
+
+	for _, feed := range feeds {
+		feed.IsSubscribed = subscribedMap[feed.ID]
+	}
+}
