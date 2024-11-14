@@ -7,6 +7,7 @@
     <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico">
     <title>Red Reader</title>
     <link rel="stylesheet" href="/assets/css/bulma.min.css">
+    <link rel="manifest" href="/assets/manifest.json">
     <script src="/assets/js/htmx.min.js"></script>
 </head>
 
@@ -35,7 +36,7 @@
                    hx-get="/articles" 
                    hx-target="#content-area"
                    hx-push-url="true">Articles</a>
-                <a class="navbar-item">Settings</a>
+                <!-- <a class="navbar-item">Settings</a> -->
             </div>
 
             <div class="navbar-end">
@@ -53,7 +54,7 @@
             </div>
         </div>
     </nav>
-    <section class="section">
+    <section class="section" style="padding-top: 8px;">
         <div class="container" id="page-title">
             <div id="content-area">
                 {{block "content" .}}
@@ -71,6 +72,17 @@
                         const $target = document.getElementById(target);
                         el.classList.toggle('is-active');
                         $target.classList.toggle('is-active');
+                    });
+                });
+
+                const navbarMenu = document.getElementById('navbarBasic');
+                const navbarBurger = document.querySelector('.navbar-burger');
+                const menuItems = navbarMenu.querySelectorAll('a');
+                
+                menuItems.forEach(item => {
+                    item.addEventListener('click', () => {
+                        navbarMenu.classList.remove('is-active');
+                        navbarBurger.classList.remove('is-active');
                     });
                 });
             }, 50);

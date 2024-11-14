@@ -1,6 +1,17 @@
 {{define "content"}}
 <div class="container">
-    <h1 class="title">All Articles</h1>
+    <div class="level is-mobile" style="flex-wrap: nowrap">
+        <div class="level-left" style="flex-shrink: 1; min-width: 0;">
+            <h1 class="title is-size-4-mobile" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">All Articles</h1>
+        </div>
+        <div class="level-right" style="flex-shrink: 0; margin-left: 1rem;">
+            <button class="button is-light" 
+                    hx-get="/articles" 
+                    hx-target="#content-area">
+                <span class="icon">↻</span>
+            </button>
+        </div>
+    </div>
 
     {{range .Articles}}
     <div class="box">
