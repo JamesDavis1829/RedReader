@@ -1,0 +1,33 @@
+{{define "content"}}
+<div class="container">
+    <h1 class="title">Settings</h1>
+    
+    <div class="box">
+        <h2 class="subtitle">Your Subscribed Feeds</h2>
+        {{if .Feeds}}
+            <div class="columns is-multiline">
+                {{range .Feeds}}
+                <div class="column is-one-third" id="feed-{{.ID}}">
+                    <div class="card">
+                        <div class="card-content">
+                            <p class="title is-5">{{.Title}}</p>
+                            <p class="subtitle is-6">{{.Description}}</p>
+                        </div>
+                        <footer class="card-footer">
+                            <a href="#" class="card-footer-item has-text-danger"
+                               hx-delete="/feeds/{{.ID}}/subscribe"
+                               hx-target="#feed-{{.ID}}"
+                               hx-swap="outerHTML">
+                                Unsubscribe
+                            </a>
+                        </footer>
+                    </div>
+                </div>
+                {{end}}
+            </div>
+        {{else}}
+            <p>You haven't subscribed to any feeds yet. Browse the <a href="/feeds">feeds page</a> to find interesting content!</p>
+        {{end}}
+    </div>
+</div>
+{{end}}

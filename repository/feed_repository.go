@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -141,7 +142,24 @@ func (r *FeedRepository) GetFeedsByIds(ids []string) ([]*models.Feed, error) {
 	return feeds, nil
 }
 
-// Add this helper method to check if a feed is in a subscription list
+func (r *FeedRepository) GetFeedByTitle(ctx context.Context, name string) (*models.Feed, error) {
+	filter := bson.M{"title": bson.M{"$regex": primitive.Regex{
+		Pattern: "^" + regexp.QuoteMeta(name) + "$",
+		Options: "i",
+	}}}
+
+	var feed models.Feed
+	err := r.collection.FindOne(ctx, filter).Decode(&feed)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("error finding feed by name: %v", err)
+	}
+
+	return &feed, nil
+}
+
 func (r *FeedRepository) AddSubscriptionStatus(feeds []*models.Feed, subscribedIds []string) {
 	subscribedMap := make(map[string]bool)
 	for _, id := range subscribedIds {

@@ -7,16 +7,18 @@ import (
 )
 
 type BackgroundWorker struct {
-	fetcher *FeedFetcher
-	ticker  *time.Ticker
-	done    chan bool
+	fetcher   *FeedFetcher
+	hnFetcher *HackerNewsFetcher
+	ticker    *time.Ticker
+	done      chan bool
 }
 
 func NewBackgroundWorker(feedRepo *repository.FeedRepository, articleRepo *repository.ArticleRepository) *BackgroundWorker {
 	return &BackgroundWorker{
-		fetcher: NewFeedFetcher(feedRepo, articleRepo),
-		ticker:  time.NewTicker(15 * time.Minute),
-		done:    make(chan bool),
+		fetcher:   NewFeedFetcher(feedRepo, articleRepo),
+		hnFetcher: NewHackerNewsFetcher(feedRepo, articleRepo),
+		ticker:    time.NewTicker(15 * time.Minute),
+		done:      make(chan bool),
 	}
 }
 
@@ -29,7 +31,7 @@ func (w *BackgroundWorker) Start() {
 			}
 		}()
 
-		//w.safeFetch()
+		w.safeFetch()
 
 		for {
 			select {
@@ -50,8 +52,14 @@ func (w *BackgroundWorker) safeFetch() {
 		}
 	}()
 
+	// Fetch RSS feeds
 	if err := w.fetcher.FetchAll(); err != nil {
-		println("Error in background worker:", err)
+		println("Error in feed fetching:", err)
+	}
+
+	// Fetch Hacker News stories
+	if err := w.hnFetcher.FetchAndSave(); err != nil {
+		println("Error in Hacker News fetching:", err)
 	}
 }
 
