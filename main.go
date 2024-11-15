@@ -35,15 +35,6 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 	isHtmx := c.Request().Header.Get("HX-Request") == "true"
 	addUserToData(c, data)
 
-	//Special Case for the Direct Link to Article
-	if name == "article_view.html" {
-		renderTemplates, err := renderTemplates.ParseFS(templateFs, "templates/article_view.html")
-		if err != nil {
-			return fmt.Errorf("failed to parse content template: %v", err)
-		}
-		return renderTemplates.ExecuteTemplate(w, name, data)
-	}
-
 	if isHtmx {
 		renderTemplates, err = renderTemplates.ParseFS(templateFs, "templates/base_htmx.html")
 	} else {
@@ -247,7 +238,14 @@ func main() {
 		if err != nil {
 			return err
 		}
-		return c.Render(200, "article_view.html", article)
+		return c.Render(200, "article_view.html", map[string]interface{}{
+			"Title":       article.Title,
+			"Author":      article.Author,
+			"PublishedAt": article.PublishedAt,
+			"FeedTitle":   article.FeedTitle,
+			"URL":         article.URL,
+			"ViewContent": article.ViewContent(),
+		})
 	})
 
 	// Add subscribe/unsubscribe routes

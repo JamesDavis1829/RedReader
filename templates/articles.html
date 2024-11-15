@@ -41,8 +41,11 @@
                               hx-trigger="click"
                               onclick="showModalContainer()">Quick View</span>
                     </a>
-                    <a href="/article/{{.ID}}">
-                        <span class="button is-small is-info">Page View</span>
+                    <a>
+                        <span class="button is-small is-info"
+                              hx-get="/article/{{.ID}}"
+                              hx-target="#content-area"
+                              hx-push-url="true">Page View</span>
                     </a>
                     {{end}}
                 </div>

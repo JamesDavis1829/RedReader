@@ -1,63 +1,42 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico">
-    <title>{{.Title}} - Red Reader</title>
-    <link rel="stylesheet" href="/assets/css/bulma.min.css">
-    <style>
-        :root {
-            --bulma-primary-h: 0deg;
-            --bulma-primary-l: 39%;
-            --bulma-link-h: 0deg;
-            --bulma-link-l: 45%;
-            --bulma-info-h: 0deg;
-            --bulma-info-s: 0%;
-            --bulma-info-l: 95%;
-            --bulma-success-h: 53deg;
-            --bulma-success-s: 100%;
-            --bulma-success-l: 97%;
-            --bulma-size-normal: 1.2rem;
-            --bulma-size-medium: 1.45rem;
-            --bulma-size-large: 1.7rem;
-            --bulma-body-size: 1rem;
-            --bulma-body-font-size: 1.2rem;
-            --bulma-control-size: 1rem;
-        }
-    </style>
-</head>
-<body>
-    <nav class="navbar" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
-            <a class="navbar-item" href="/">
-                <img src="/assets/img/RedReaderLogo.png" alt="Red Reader Logo">
-                <strong>Red Reader</strong>
-            </a>
+{{define "content"}}
+<div class="container" id="article-container">
+    <div class="content">
+        <h1 class="title">{{.Title}}</h1>
+        <div class="subtitle">
+            {{if .Author}}<span>by {{.Author}}</span>{{end}}
+            <span>{{.PublishedAt.Format "Jan 02, 2006 15:04"}}</span>
+            {{if .FeedTitle}}<span class="ml-2">from {{.FeedTitle}}</span>{{end}}
         </div>
-    </nav>
 
-    <section class="section">
-        <div class="container">
+        <div class="buttons mb-5">
+            <a href="{{.URL}}" target="_blank" class="button is-link">Read on Original Site</a>
+            <button onclick="copyArticleLink()" class="button is-light">📋 Copy Link</button>
+        </div>
+
+        <div class="box">
             <div class="content">
-                <h1 class="title">{{.Title}}</h1>
-                <div class="subtitle">
-                    {{if .Author}}<span>by {{.Author}}</span>{{end}}
-                    <span>{{.PublishedAt.Format "Jan 02, 2006 15:04"}}</span>
-                    {{if .FeedTitle}}<span class="ml-2">from {{.FeedTitle}}</span>{{end}}
-                </div>
-                
-                <div class="buttons mb-5">
-                    <a href="{{.URL}}" target="_blank" class="button is-link">Read on Original Site</a>
-                </div>
-
-                <div class="box">
-                    <div class="content">
-                        {{.ViewContent | safeHTML}}
-                    </div>
-                </div>
+                {{.ViewContent | safeHTML}}
             </div>
         </div>
-    </section>
-</body>
-</html>
+    </div>
+</div>
+<script>
+    function copyArticleLink() {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            const btn = event.target.closest('button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '✓ Copied!';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+            }, 2000);
+        });
+    }
+
+    document.addEventListener('htmx:afterSettle', function () {
+        document.getElementById('article-container').scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    });
+</script>
+{{end}}
