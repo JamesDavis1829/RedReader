@@ -25,7 +25,7 @@ func SetAuthCookie(c echo.Context, user *models.User, userRepo *repository.UserR
 	cookie := new(http.Cookie)
 	cookie.Name = cookieName
 	cookie.Value = token
-	cookie.Expires = time.Now().Add(24 * time.Hour)
+	cookie.Expires = time.Now().Add(24 * 31 * time.Hour)
 	cookie.Path = "/"
 	cookie.HttpOnly = true
 
