@@ -51,7 +51,10 @@ func (h *HackerNewsFetcher) FetchAndSave() error {
 		article.URL = story.URL
 		article.Author = story.By
 		article.Description = fmt.Sprintf("Points: %d | Comments: %d", story.Score, story.Descendants)
-		article.PublishedAt = story.Time
+
+		//Hacker News stories get to the front page by votes, well after their published date
+		//so we set the published date to the time the article was fetched to artificially boost it
+		article.PublishedAt = time.Now()
 
 		if err := h.articleRepo.CreateArticle(article); err != nil {
 			println("Error saving HN article:", err.Error())
