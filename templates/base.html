@@ -5,7 +5,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico">
-    <title>Red Reader</title>
+    <title>
+        {{if .Title}}
+            {{.Title}} - Red Reader
+        {{else}}
+            Red Reader
+        {{end}}
+    </title>
     <link rel="stylesheet" href="/assets/css/bulma.min.css">
     <link rel="manifest" href="/assets/manifest.json">
     <script src="/assets/js/htmx.min.js"></script>
@@ -28,14 +34,8 @@
 
         <div id="navbarBasic" class="navbar-menu">
             <div class="navbar-start">
-                <a class="navbar-item" 
-                   hx-get="/feeds" 
-                   hx-target="#content-area"
-                   hx-push-url="true">Feeds</a>
-                <a class="navbar-item" 
-                   hx-get="/articles" 
-                   hx-target="#content-area"
-                   hx-push-url="true">Articles</a>
+                <a class="navbar-item" hx-get="/feeds" hx-target="#content-area" hx-push-url="true">Feeds</a>
+                <a class="navbar-item" hx-get="/articles" hx-target="#content-area" hx-push-url="true">Articles</a>
                 <!-- <a class="navbar-item">Settings</a> -->
             </div>
 
@@ -78,7 +78,7 @@
                 const navbarMenu = document.getElementById('navbarBasic');
                 const navbarBurger = document.querySelector('.navbar-burger');
                 const menuItems = navbarMenu.querySelectorAll('a');
-                
+
                 menuItems.forEach(item => {
                     item.addEventListener('click', () => {
                         navbarMenu.classList.remove('is-active');
