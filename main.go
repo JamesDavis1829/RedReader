@@ -35,6 +35,11 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 	isHtmx := c.Request().Header.Get("HX-Request") == "true"
 	addUserToData(c, data)
 
+	renderTemplates, err = renderTemplates.ParseFS(templateFs, "templates/components/*")
+	if err != nil {
+		return fmt.Errorf("failed to parse components: %v", err)
+	}
+
 	if isHtmx {
 		renderTemplates, err = renderTemplates.ParseFS(templateFs, "templates/base_htmx.html")
 	} else {

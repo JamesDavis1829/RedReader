@@ -14,47 +14,9 @@
     </div>
 
     {{range .Articles}}
-    <div class="box">
-        <article class="media">
-            <div class="media-content">
-                <div class="content">
-                    <p>
-                        <strong>{{.Title}}</strong>
-                        {{if .Author}}<small>by {{.Author}}</small>{{end}}
-                        <small>{{.PublishedAt.Format "Jan 02, 2006"}}</small>
-                        {{if .FeedTitle}}<small class="ml-2">from {{.FeedTitle}}</small>{{end}}
-                        {{if .ShouldShowDescription}}
-                        <br>
-                        {{.TruncatedDescription | safeHTML}}
-                        {{end}}
-                    </p>
-                </div>
-                <div class="buttons is-flex is-flex-wrap-nowrap">
-                    <a href="{{.URL}}" target="_blank">
-                        <span class="button is-small is-link">Original</span>
-                    </a>
-                    {{if .HasViewableContent}}
-                    <a>
-                        <span class="button is-small is-info" 
-                              hx-get="/articles/{{.ID}}/content"
-                              hx-target="#modal-container"
-                              hx-trigger="click"
-                              onclick="showModalContainer()">Quick View</span>
-                    </a>
-                    <a>
-                        <span class="button is-small is-info"
-                              hx-get="/article/{{.ID}}"
-                              hx-target="#content-area"
-                              hx-push-url="true">Page View</span>
-                    </a>
-                    {{end}}
-                </div>
-            </div>
-        </article>
-    </div>
+        {{template "article" .}}
     {{end}}
 
-    <!-- Add a container for the modal -->
     <div id="modal-container"></div>
 
     <nav class="pagination is-centered" role="navigation" aria-label="pagination">
