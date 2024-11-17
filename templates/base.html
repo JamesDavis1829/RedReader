@@ -7,9 +7,9 @@
     <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico">
     <title>
         {{if .Title}}
-            {{.Title}} - Red Reader
+        {{.Title}} - Red Reader
         {{else}}
-            Red Reader
+        Red Reader
         {{end}}
     </title>
     <link rel="stylesheet" href="/assets/css/bulma.min.css">
@@ -64,28 +64,26 @@
     </section>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
-                $navbarBurgers.forEach(el => {
-                    el.addEventListener('click', () => {
-                        const target = el.dataset.target;
-                        const $target = document.getElementById(target);
-                        el.classList.toggle('is-active');
-                        $target.classList.toggle('is-active');
-                    });
+            const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+            $navbarBurgers.forEach(el => {
+                el.addEventListener('click', () => {
+                    const target = el.dataset.target;
+                    const $target = document.getElementById(target);
+                    el.classList.toggle('is-active');
+                    $target.classList.toggle('is-active');
                 });
+            });
 
-                const navbarMenu = document.getElementById('navbarBasic');
-                const navbarBurger = document.querySelector('.navbar-burger');
-                const menuItems = navbarMenu.querySelectorAll('a');
+            const navbarMenu = document.getElementById('navbarBasic');
+            const navbarBurger = document.querySelector('.navbar-burger');
+            const menuItems = navbarMenu.querySelectorAll('a');
 
-                menuItems.forEach(item => {
-                    item.addEventListener('click', () => {
-                        navbarMenu.classList.remove('is-active');
-                        navbarBurger.classList.remove('is-active');
-                    });
+            menuItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    navbarMenu.classList.remove('is-active');
+                    navbarBurger.classList.remove('is-active');
                 });
-            }, 50);
+            });
         });
 
         function delayedSmoothScroll(target, timeout = 50) {

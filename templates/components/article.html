@@ -4,7 +4,7 @@
         <div class="media-content">
             <div class="content">
                 <p>
-                    <strong>{{.Title}}</strong>
+                    <strong>{{.Title | safeHTML}}</strong>
                     {{if .Author}}<small>by {{.Author}}</small>{{end}}
                     <small>{{.PublishedAt.Format "Jan 02, 2006"}}</small>
                     {{if .FeedTitle}}<small class="ml-2">from {{.FeedTitle}}</small>{{end}}
