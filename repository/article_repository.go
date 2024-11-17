@@ -40,7 +40,7 @@ func (r *ArticleRepository) ArticleExists(url string) (bool, error) {
 	return count > 0, err
 }
 
-func (r *ArticleRepository) GetPaginatedArticlesByFeed(feedId string, page, perPage int64) ([]*models.Article, int64, error) {
+func (r *ArticleRepository) GetPaginatedArticlesByFeed(feedId string, page, perPage int64) ([]*ArticleWithFeed, int64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -63,7 +63,7 @@ func (r *ArticleRepository) GetPaginatedArticlesByFeed(feedId string, page, perP
 	}
 	defer cursor.Close(ctx)
 
-	var articles []*models.Article
+	var articles []*ArticleWithFeed
 	if err = cursor.All(ctx, &articles); err != nil {
 		return nil, 0, err
 	}
