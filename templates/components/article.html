@@ -15,7 +15,12 @@
                 </p>
             </div>
             <div class="buttons is-flex is-flex-wrap-nowrap">
-                <a href="{{.URL}}" target="_blank">
+                <a href="{{.URL}}" 
+                   target="_blank" 
+                   rel="external noopener"
+                   data-no-pwa="true"
+                   referrerpolicy="no-referrer"
+                   onclick="openInBrowser(this.href, event)">
                     <span class="button is-small is-link">Original</span>
                 </a>
                 {{if .HasViewableContent}}

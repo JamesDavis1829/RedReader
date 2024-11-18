@@ -93,6 +93,17 @@
                 });
             }, timeout);
         }
+
+        function isIOS() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        }
+
+        function openInBrowser(url, event) {
+            if (isIOS()) {
+                event.preventDefault();
+                window.location.href = url;
+            }
+        }
     </script>
     <style>
         :root {
