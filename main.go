@@ -25,6 +25,10 @@ var templateFs embed.FS
 //go:embed assets/*
 var assetFs embed.FS
 
+const (
+	perPage = int64(15)
+)
+
 type Template struct {
 	templateFuncs template.FuncMap
 }
@@ -123,7 +127,6 @@ func main() {
 		if page < 1 {
 			page = 1
 		}
-		perPage := int64(18)
 
 		feeds, total, err := feedRepo.GetPaginatedFeeds(page, perPage)
 		if err != nil {
@@ -154,7 +157,6 @@ func main() {
 		if feedPage < 1 {
 			feedPage = 1
 		}
-		perPage := int64(10)
 
 		feed, err := feedRepo.GetFeed(feedId)
 		if err != nil {
@@ -192,7 +194,6 @@ func main() {
 		if page < 1 {
 			page = 1
 		}
-		perPage := int64(20)
 
 		var articles []*repository.ArticleWithFeed
 		var total int64
@@ -293,14 +294,30 @@ func main() {
 
 		feed, err := feedRepo.AddFeed(url)
 		if err != nil {
-			return err
+			c.Response().Header().Set("HX-Reswap", "innerHTML")
+			c.Response().Header().Set("HX-Retarget", "#modal-error-message")
+			return c.String(200, "<p>Failed to add feed</p>")
 		}
 
 		if err := userRepo.AddPersonalFeed(user.ID, feed.ID.String()); err != nil {
-			return err
+			c.Response().Header().Set("HX-Reswap", "innerHTML")
+			c.Response().Header().Set("HX-Retarget", "#modal-error-message")
+			return c.String(200, "<p>Failed to add personal feed</p>")
 		}
 
-		return c.NoContent(200)
+		feeds, total, err := feedRepo.GetPaginatedFeeds(1, 18)
+		if err != nil {
+			return c.String(400, err.Error())
+		}
+
+		pages, totalPages := calculatePages(total, perPage, 1)
+
+		return c.Render(200, "feed_list.html", map[string]interface{}{
+			"Feeds":       feeds,
+			"CurrentPage": int64(1),
+			"TotalPages":  totalPages,
+			"Pages":       pages,
+		})
 	})
 
 	e.Logger.Fatal(e.Start(":1323"))

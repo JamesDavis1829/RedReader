@@ -35,13 +35,15 @@
         <div class="modal-background" onclick="closeModal()"></div>
         <div class="modal-content">
             <div class="box">
-                <form hx-post="/feeds" hx-target="#feed-list" hx-swap="beforeend">
+                <form hx-post="/feeds" hx-target="#content-area" hx-swap="outerHTML"
+                    hx-on="htmx:afterRequest: closeModal">
                     <div class="field">
                         <label class="label">Feed URL</label>
                         <div class="control">
                             <input class="input" type="url" name="url" placeholder="Enter feed URL" required>
                         </div>
                     </div>
+                    <div id="modal-error-message" class="has-text-danger"></div>
                     <div class="field is-grouped">
                         <div class="control">
                             <button class="button is-link" type="submit">Add Feed</button>
@@ -73,14 +75,14 @@
             {{end}}
         </ul>
     </div>
-</div>
 
-{{if $.User}}
-<div class="block"></div>
-<div class="block">
-    <button class="button is-primary" onclick="openModal()">Add Feed</button>
+    {{if $.User}}
+    <div class="block"></div>
+    <div class="block">
+        <button class="button is-primary" onclick="openModal()">Add Feed</button>
+    </div>
+    {{end}}
 </div>
-{{end}}
 
 <script>
     function openModal() {
