@@ -46,7 +46,7 @@ func (h *HackerNewsFetcher) FetchAndSave() error {
 			continue
 		}
 
-		article := models.NewArticle(feed.ID)
+		article := models.NewArticle(feed.ID.String())
 		article.Title = story.Title
 		article.URL = story.URL
 		article.Author = story.By

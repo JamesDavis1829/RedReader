@@ -29,6 +29,10 @@ func (f *FeedFetcher) FetchAll() error {
 	}
 
 	for _, feed := range feeds {
+		if feed.URL == "api" {
+			continue
+		}
+
 		if err := f.FetchOne(feed); err != nil {
 			// Log error but continue with other feeds
 			println("Error fetching feed:", feed.Title, feed.URL, err)
@@ -49,7 +53,7 @@ func (f *FeedFetcher) FetchOne(feed *models.Feed) error {
 	feed.Description = parsedFeed.Description
 	feed.LastFetched = time.Now()
 
-	if err := f.feedRepo.UpdateLastFetched(feed.ID, feed.LastFetched); err != nil {
+	if err := f.feedRepo.UpdateLastFetched(feed.ID.String(), feed.LastFetched); err != nil {
 		return err
 	}
 
@@ -68,7 +72,7 @@ func (f *FeedFetcher) FetchOne(feed *models.Feed) error {
 			continue
 		}
 
-		article := models.NewArticle(feed.ID)
+		article := models.NewArticle(feed.ID.String())
 		article.Title = item.Title
 		article.Description = item.Description
 		article.Content = item.Content

@@ -37,7 +37,7 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 
 	renderTemplates, err = renderTemplates.ParseFS(templateFs, "templates/components/*")
 	if err != nil {
-		return fmt.Errorf("failed to parse components: %v", err)
+		return fmt.Errorf("failed to parse components: %w", err)
 	}
 
 	if isHtmx {
@@ -46,12 +46,12 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 		renderTemplates, err = renderTemplates.ParseFS(templateFs, "templates/base.html")
 	}
 	if err != nil {
-		return fmt.Errorf("failed to parse base template: %v", err)
+		return fmt.Errorf("failed to parse base template: %w", err)
 	}
 
 	renderTemplates, err = renderTemplates.ParseFS(templateFs, "templates/"+name)
 	if err != nil {
-		return fmt.Errorf("failed to parse content template: %v", err)
+		return fmt.Errorf("failed to parse content template: %w", err)
 	}
 
 	if isHtmx {
@@ -118,7 +118,6 @@ func main() {
 		return c.Render(200, "index.html", data)
 	})
 
-	// Update the /feeds route to include subscription status
 	e.GET("/feeds", func(c echo.Context) error {
 		page, _ := strconv.ParseInt(c.QueryParam("page"), 10, 64)
 		if page < 1 {
@@ -286,6 +285,22 @@ func main() {
 		feed.IsSubscribed = false
 
 		return c.Render(200, "feed_card.html", feed)
+	})
+
+	e.POST("/feeds", func(c echo.Context) error {
+		user := c.Get("user").(*models.User)
+		url := c.FormValue("url")
+
+		feed, err := feedRepo.AddFeed(url)
+		if err != nil {
+			return err
+		}
+
+		if err := userRepo.AddPersonalFeed(user.ID, feed.ID.String()); err != nil {
+			return err
+		}
+
+		return c.NoContent(200)
 	})
 
 	e.Logger.Fatal(e.Start(":1323"))

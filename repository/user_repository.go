@@ -126,3 +126,23 @@ func (r *UserRepository) UnsubscribeFromFeed(userId string, feedId string) error
 
 	return nil
 }
+
+func (r *UserRepository) AddPersonalFeed(userId string, feedId string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	result, err := r.collection.UpdateOne(
+		ctx,
+		bson.M{"id": userId},
+		bson.M{"$addToSet": bson.M{"personalFeeds": feedId}},
+	)
+	if err != nil {
+		return err
+	}
+
+	if result.MatchedCount == 0 {
+		return mongo.ErrNoDocuments
+	}
+
+	return nil
+}

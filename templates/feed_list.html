@@ -1,4 +1,6 @@
 {{define "content"}}
+<div class="block">
+</div>
 <div id="feed-list">
     <div class="columns is-multiline">
         {{range .Feeds}}
@@ -11,21 +13,17 @@
                 <footer class="card-footer">
                     <a href="/feeds/{{.ID}}/articles" class="card-footer-item">View Articles</a>
                     {{if $.User}}
-                        {{if .IsSubscribed}}
-                        <a href="#" class="card-footer-item has-text-danger"
-                           hx-delete="/feeds/{{.ID}}/subscribe"
-                           hx-target="#feed-{{.ID}}"
-                           hx-swap="outerHTML">
-                            Unsubscribe
-                        </a>
-                        {{else}}
-                        <a href="#" class="card-footer-item has-text-primary"
-                           hx-post="/feeds/{{.ID}}/subscribe"
-                           hx-target="#feed-{{.ID}}"
-                           hx-swap="outerHTML">
-                            Subscribe
-                        </a>
-                        {{end}}
+                    {{if .IsSubscribed}}
+                    <a href="#" class="card-footer-item has-text-danger" hx-delete="/feeds/{{.ID}}/subscribe"
+                        hx-target="#feed-{{.ID}}" hx-swap="outerHTML">
+                        Unsubscribe
+                    </a>
+                    {{else}}
+                    <a href="#" class="card-footer-item has-text-primary" hx-post="/feeds/{{.ID}}/subscribe"
+                        hx-target="#feed-{{.ID}}" hx-swap="outerHTML">
+                        Subscribe
+                    </a>
+                    {{end}}
                     {{end}}
                 </footer>
             </div>
@@ -33,34 +31,64 @@
         {{end}}
     </div>
 
+    <div id="modal" class="modal">
+        <div class="modal-background" onclick="closeModal()"></div>
+        <div class="modal-content">
+            <div class="box">
+                <form hx-post="/feeds" hx-target="#feed-list" hx-swap="beforeend">
+                    <div class="field">
+                        <label class="label">Feed URL</label>
+                        <div class="control">
+                            <input class="input" type="url" name="url" placeholder="Enter feed URL" required>
+                        </div>
+                    </div>
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button class="button is-link" type="submit">Add Feed</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <button class="modal-close is-large" aria-label="close" onclick="closeModal()"></button>
+    </div>
+
     <div class="pagination is-centered" role="navigation" aria-label="pagination">
-        <a class="pagination-previous" 
-           {{if le .CurrentPage 1}}disabled{{end}}
-           hx-get="/feeds?page={{subtract .CurrentPage 1}}"
-           hx-target="#feed-list"
-           hx-push-url="true"
-           onclick="delayedSmoothScroll('#page-title')">
-           Previous
+        <a class="pagination-previous" {{if le .CurrentPage 1}}disabled{{end}}
+            hx-get="/feeds?page={{subtract .CurrentPage 1}}" hx-target="#feed-list" hx-push-url="true"
+            onclick="delayedSmoothScroll('#page-title')">
+            Previous
         </a>
-        <a class="pagination-next"
-           {{if ge .CurrentPage .TotalPages}}disabled{{end}}
-           hx-get="/feeds?page={{add .CurrentPage 1}}"
-           hx-target="#feed-list" 
-           hx-push-url="true"
-           onclick="delayedSmoothScroll('#page-title')">
-           Next
+        <a class="pagination-next" {{if ge .CurrentPage .TotalPages}}disabled{{end}}
+            hx-get="/feeds?page={{add .CurrentPage 1}}" hx-target="#feed-list" hx-push-url="true"
+            onclick="delayedSmoothScroll('#page-title')">
+            Next
         </a>
         <ul class="pagination-list">
             {{range .Pages}}
             <li>
-                <a class="pagination-link {{if eq . $.CurrentPage}}is-current{{end}}"
-                   hx-get="/feeds?page={{.}}"
-                   hx-target="#feed-list"
-                   hx-push-url="true"
-                   onclick="delayedSmoothScroll('#page-title')">{{.}}</a>
+                <a class="pagination-link {{if eq . $.CurrentPage}}is-current{{end}}" hx-get="/feeds?page={{.}}"
+                    hx-target="#feed-list" hx-push-url="true" onclick="delayedSmoothScroll('#page-title')">{{.}}</a>
             </li>
             {{end}}
         </ul>
     </div>
 </div>
+
+{{if $.User}}
+<div class="block"></div>
+<div class="block">
+    <button class="button is-primary" onclick="openModal()">Add Feed</button>
+</div>
+{{end}}
+
+<script>
+    function openModal() {
+        document.getElementById('modal').classList.add('is-active');
+    }
+
+    function closeModal() {
+        document.getElementById('modal').classList.remove('is-active');
+    }
+</script>
 {{end}}

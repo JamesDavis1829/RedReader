@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/mmcdole/gofeed"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -167,6 +168,33 @@ func (r *FeedRepository) AddSubscriptionStatus(feeds []*models.Feed, subscribedI
 	}
 
 	for _, feed := range feeds {
-		feed.IsSubscribed = subscribedMap[feed.ID]
+		feed.IsSubscribed = subscribedMap[feed.ID.String()]
 	}
+}
+
+func (r *FeedRepository) AddFeed(url string) (*models.Feed, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if url == "" {
+		return nil, fmt.Errorf("invalid feed URL")
+	}
+
+	content, err := gofeed.NewParser().ParseURL(url)
+	if err != nil {
+		return nil, fmt.Errorf("error parsing feed: %w", err)
+	}
+
+	feed := models.NewFeed(url)
+	feed.Title = content.Title
+	feed.Description = content.Description
+	feed.IsDefault = false
+	feed.URL = url
+
+	_, err = r.collection.InsertOne(ctx, feed)
+	if err != nil {
+		return nil, err
+	}
+
+	return feed, nil
 }
