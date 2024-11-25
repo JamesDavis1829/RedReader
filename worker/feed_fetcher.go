@@ -72,7 +72,7 @@ func (f *FeedFetcher) FetchOne(feed *models.Feed) error {
 			continue
 		}
 
-		article := models.NewArticle(feed.ID.String())
+		article := models.NewArticle(feed.ID.Hex())
 		article.Title = item.Title
 		article.Description = item.Description
 		article.Content = item.Content
