@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"redapplications.com/redreader/models"
@@ -127,7 +128,7 @@ func (r *UserRepository) UnsubscribeFromFeed(userId string, feedId string) error
 	return nil
 }
 
-func (r *UserRepository) AddPersonalFeed(userId string, feedId string) error {
+func (r *UserRepository) AddPersonalFeed(userId string, feedId primitive.ObjectID) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

@@ -128,13 +128,22 @@ func main() {
 			page = 1
 		}
 
-		feeds, total, err := feedRepo.GetPaginatedFeeds(page, perPage)
+		user := c.Get("user")
+		var feeds []*models.Feed
+		var total int64
+		var err error
+
+		if user != nil {
+			feeds, total, err = feedRepo.GetPaginatedFeeds(user.(*models.User), page, perPage)
+		} else {
+			feeds, total, err = feedRepo.GetPaginatedFeeds(nil, page, perPage)
+		}
 		if err != nil {
 			return err
 		}
 
 		// Add subscription status if user is logged in
-		if user := c.Get("user"); user != nil {
+		if user != nil {
 			feedRepo.AddSubscriptionStatus(feeds, user.(*models.User).SubscribedTo)
 		}
 
@@ -299,13 +308,13 @@ func main() {
 			return c.String(200, "<p>Failed to add feed</p>")
 		}
 
-		if err := userRepo.AddPersonalFeed(user.ID, feed.ID.String()); err != nil {
+		if err := userRepo.AddPersonalFeed(user.ID, feed.ID); err != nil {
 			c.Response().Header().Set("HX-Reswap", "innerHTML")
 			c.Response().Header().Set("HX-Retarget", "#modal-error-message")
 			return c.String(200, "<p>Failed to add personal feed</p>")
 		}
 
-		feeds, total, err := feedRepo.GetPaginatedFeeds(1, 18)
+		feeds, total, err := feedRepo.GetPaginatedFeeds(user, 1, 18)
 		if err != nil {
 			return c.String(400, err.Error())
 		}

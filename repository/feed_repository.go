@@ -86,12 +86,22 @@ func (r *FeedRepository) UpdateLastFetched(id string, lastFetchedTime time.Time)
 	return nil
 }
 
-func (r *FeedRepository) GetPaginatedFeeds(page, perPage int64) ([]*models.Feed, int64, error) {
+func (r *FeedRepository) GetPaginatedFeeds(user *models.User, page, perPage int64) ([]*models.Feed, int64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
+	var filter bson.M
+	if user != nil {
+		filter = bson.M{"$or": []bson.M{
+			{"_id": bson.M{"$in": user.PersonalFeeds}},
+			{"isDefault": true},
+		}}
+	} else {
+		filter = bson.M{"isDefault": true}
+	}
+
 	// Calculate total count
-	total, err := r.collection.CountDocuments(ctx, bson.M{})
+	total, err := r.collection.CountDocuments(ctx, filter)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -103,7 +113,7 @@ func (r *FeedRepository) GetPaginatedFeeds(page, perPage int64) ([]*models.Feed,
 		SetSkip(skip).
 		SetLimit(perPage)
 
-	cursor, err := r.collection.Find(ctx, bson.M{}, opts)
+	cursor, err := r.collection.Find(ctx, filter, opts)
 	if err != nil {
 		return nil, 0, err
 	}
