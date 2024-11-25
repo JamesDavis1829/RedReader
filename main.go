@@ -301,6 +301,19 @@ func main() {
 		user := c.Get("user").(*models.User)
 		url := c.FormValue("url")
 
+		// Check if feed already exists for the user
+		exists, err := feedRepo.UserFeedExistsByURL(user, url)
+		if err != nil {
+			c.Response().Header().Set("HX-Reswap", "innerHTML")
+			c.Response().Header().Set("HX-Retarget", "#modal-error-message")
+			return c.String(200, "<p>Failed to check feed existence</p>")
+		}
+		if exists {
+			c.Response().Header().Set("HX-Reswap", "innerHTML")
+			c.Response().Header().Set("HX-Retarget", "#modal-error-message")
+			return c.String(200, "<p>Feed already exists</p>")
+		}
+
 		feed, err := feedRepo.AddFeed(url)
 		if err != nil {
 			c.Response().Header().Set("HX-Reswap", "innerHTML")

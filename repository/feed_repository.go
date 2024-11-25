@@ -208,3 +208,22 @@ func (r *FeedRepository) AddFeed(url string) (*models.Feed, error) {
 
 	return feed, nil
 }
+
+func (r *FeedRepository) UserFeedExistsByURL(user *models.User, url string) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{
+		"$or": []bson.M{
+			{"url": url, "_id": bson.M{"$in": user.PersonalFeeds}},
+			{"url": url, "isDefault": true},
+		},
+	}
+
+	count, err := r.collection.CountDocuments(ctx, filter)
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
+}
