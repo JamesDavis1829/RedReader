@@ -116,6 +116,14 @@ func (r *ArticleRepository) GetPaginatedArticles(page, perPage int64) ([]*Articl
 			"$unwind": "$feed",
 		},
 		{
+			"$addFields": bson.M{
+				"feedTitle": "$feed.title",
+			},
+		},
+		{
+			"$sort": bson.M{"publishedAt": -1},
+		},
+		{
 			"$skip": skip,
 		},
 		{
