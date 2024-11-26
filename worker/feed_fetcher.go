@@ -53,7 +53,7 @@ func (f *FeedFetcher) FetchOne(feed *models.Feed) error {
 	feed.Description = parsedFeed.Description
 	feed.LastFetched = time.Now()
 
-	if err := f.feedRepo.UpdateLastFetched(feed.ID.String(), feed.LastFetched); err != nil {
+	if err := f.feedRepo.UpdateLastFetched(feed.ID.Hex(), feed.LastFetched); err != nil {
 		return err
 	}
 

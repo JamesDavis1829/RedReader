@@ -178,7 +178,7 @@ func (r *FeedRepository) AddSubscriptionStatus(feeds []*models.Feed, subscribedI
 	}
 
 	for _, feed := range feeds {
-		feed.IsSubscribed = subscribedMap[feed.ID.String()]
+		feed.IsSubscribed = subscribedMap[feed.ID.Hex()]
 	}
 }
 
