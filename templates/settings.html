@@ -7,7 +7,7 @@
         {{if .Feeds}}
             <div class="columns is-multiline">
                 {{range .Feeds}}
-                <div class="column is-one-third" id="feed-{{.ID}}">
+                <div class="column is-one-third" id="feed-{{.ID.Hex}}">
                     <div class="card">
                         <div class="card-content">
                             <p class="title is-5">{{.Title}}</p>
@@ -15,8 +15,8 @@
                         </div>
                         <footer class="card-footer">
                             <a href="#" class="card-footer-item has-text-danger"
-                               hx-delete="/feeds/{{.ID}}/subscribe"
-                               hx-target="#feed-{{.ID}}"
+                               hx-delete="/feeds/{{.ID.Hex}}/subscribe"
+                               hx-target="#feed-{{.ID.Hex}}"
                                hx-swap="outerHTML">
                                 Unsubscribe
                             </a>

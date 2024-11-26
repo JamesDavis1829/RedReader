@@ -4,23 +4,23 @@
 <div id="feed-list">
     <div class="columns is-multiline">
         {{range .Feeds}}
-        <div class="column is-one-third" id="feed-{{.ID}}">
+        <div class="column is-one-third" id="feed-{{.ID.Hex}}">
             <div class="card">
                 <div class="card-content">
                     <p class="title is-5">{{.Title}}</p>
                     <p class="subtitle is-6">{{.Description}}</p>
                 </div>
                 <footer class="card-footer">
-                    <a href="/feeds/{{.ID}}/articles" class="card-footer-item">View Articles</a>
+                    <a href="/feeds/{{.ID.Hex}}/articles" class="card-footer-item">View Articles</a>
                     {{if $.User}}
                     {{if .IsSubscribed}}
-                    <a href="#" class="card-footer-item has-text-danger" hx-delete="/feeds/{{.ID}}/subscribe"
-                        hx-target="#feed-{{.ID}}" hx-swap="outerHTML">
+                    <a href="#" class="card-footer-item has-text-danger" hx-delete="/feeds/{{.ID.Hex}}/subscribe"
+                        hx-target="#feed-{{.ID.Hex}}" hx-swap="outerHTML">
                         Unsubscribe
                     </a>
                     {{else}}
-                    <a href="#" class="card-footer-item has-text-primary" hx-post="/feeds/{{.ID}}/subscribe"
-                        hx-target="#feed-{{.ID}}" hx-swap="outerHTML">
+                    <a href="#" class="card-footer-item has-text-primary" hx-post="/feeds/{{.ID.Hex}}/subscribe"
+                        hx-target="#feed-{{.ID.Hex}}" hx-swap="outerHTML">
                         Subscribe
                     </a>
                     {{end}}
