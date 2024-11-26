@@ -91,9 +91,19 @@ func (r *ArticleRepository) GetPaginatedArticles(page, perPage int64) ([]*Articl
 					{
 						"$match": bson.M{
 							"$expr": bson.M{
-								"$eq": []interface{}{
-									"$_id",
-									bson.M{"$toObjectId": "$$feedId"},
+								"$and": []bson.M{
+									{
+										"$eq": []interface{}{
+											"$_id",
+											bson.M{"$toObjectId": "$$feedId"},
+										},
+									},
+									{
+										"$eq": []interface{}{
+											"$isDefault",
+											true,
+										},
+									},
 								},
 							},
 						},
@@ -104,14 +114,6 @@ func (r *ArticleRepository) GetPaginatedArticles(page, perPage int64) ([]*Articl
 		},
 		{
 			"$unwind": "$feed",
-		},
-		{
-			"$addFields": bson.M{
-				"feedTitle": "$feed.title",
-			},
-		},
-		{
-			"$sort": bson.M{"publishedAt": -1},
 		},
 		{
 			"$skip": skip,
