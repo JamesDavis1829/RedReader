@@ -63,7 +63,9 @@
         </div>
     </section>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        pollForButtons();
+
+        function addButtonHandlers() {
             const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
             $navbarBurgers.forEach(el => {
                 el.addEventListener('click', () => {
@@ -84,7 +86,16 @@
                     navbarBurger.classList.remove('is-active');
                 });
             });
-        });
+        }
+
+        function pollForButtons() {
+            setTimeout(() => {
+                if (document.querySelectorAll('.navbar-burger').length > 0)
+                    addButtonHandlers()
+                else
+                    pollForButtons()
+            }, 15)
+        }
 
         function delayedSmoothScroll(target, timeout = 50) {
             setTimeout(() => {
