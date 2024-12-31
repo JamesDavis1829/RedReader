@@ -84,6 +84,15 @@ func (r *ArticleRepository) GetPaginatedArticles(page, perPage int64) ([]*Articl
 
 	pipeline := []bson.M{
 		{
+			"$sort": bson.M{"publishedAt": -1},
+		},
+		{
+			"$skip": skip,
+		},
+		{
+			"$limit": perPage,
+		},
+		{
 			"$lookup": bson.M{
 				"from": "feeds",
 				"let":  bson.M{"feedId": "$feedId"},
@@ -119,15 +128,6 @@ func (r *ArticleRepository) GetPaginatedArticles(page, perPage int64) ([]*Articl
 			"$addFields": bson.M{
 				"feedTitle": "$feed.title",
 			},
-		},
-		{
-			"$sort": bson.M{"publishedAt": -1},
-		},
-		{
-			"$skip": skip,
-		},
-		{
-			"$limit": perPage,
 		},
 	}
 
@@ -191,6 +191,15 @@ func (r *ArticleRepository) GetPaginatedArticlesForUser(user *models.User, page,
 	pipeline := []bson.M{
 		matchStage,
 		{
+			"$sort": bson.M{"publishedAt": -1},
+		},
+		{
+			"$skip": skip,
+		},
+		{
+			"$limit": perPage,
+		},
+		{
 			"$lookup": bson.M{
 				"from": "feeds",
 				"let":  bson.M{"feedId": "$feedId"},
@@ -216,15 +225,6 @@ func (r *ArticleRepository) GetPaginatedArticlesForUser(user *models.User, page,
 			"$addFields": bson.M{
 				"feedTitle": "$feed.title",
 			},
-		},
-		{
-			"$sort": bson.M{"publishedAt": -1},
-		},
-		{
-			"$skip": skip,
-		},
-		{
-			"$limit": perPage,
 		},
 	}
 
