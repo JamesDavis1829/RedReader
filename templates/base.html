@@ -97,7 +97,7 @@
             }, 15)
         }
 
-        function delayedSmoothScroll(target, timeout = 50) {
+        function delayedSmoothScroll(target, timeout = 100) {
             setTimeout(() => {
                 document.querySelector(target).scrollIntoView({
                     behavior: 'smooth'
