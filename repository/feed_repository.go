@@ -227,3 +227,21 @@ func (r *FeedRepository) UserFeedExistsByURL(user *models.User, url string) (boo
 
 	return count > 0, nil
 }
+
+func (r *FeedRepository) DeleteFeedByID(feedID primitive.ObjectID) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"_id": feedID}
+
+	result, err := r.collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return err
+	}
+
+	if result.DeletedCount == 0 {
+		return fmt.Errorf("feed with ID %s not found", feedID.Hex())
+	}
+
+	return nil
+}

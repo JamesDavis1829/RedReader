@@ -96,6 +96,7 @@ func main() {
 	userRepo := repository.NewUserRepository(mongoClient)
 	feedRepo := repository.NewFeedRepository(mongoClient)
 	articleRepo := repository.NewArticleRepository(mongoClient)
+	feedFetcher := worker.NewFeedFetcher(feedRepo, articleRepo)
 
 	backgroundWorker := worker.NewBackgroundWorker(feedRepo, articleRepo)
 	backgroundWorker.Start()
@@ -321,7 +322,15 @@ func main() {
 			return c.String(200, "<p>Failed to add feed</p>")
 		}
 
+		if err = feedFetcher.FetchOne(feed); err != nil {
+			_ = feedRepo.DeleteFeedByID(feed.ID)
+			c.Response().Header().Set("HX-Reswap", "innerHTML")
+			c.Response().Header().Set("HX-Retarget", "#modal-error-message")
+			return c.String(200, "<p>Failed to fetch articles from feed.</p>")
+		}
+
 		if err := userRepo.AddPersonalFeed(user.ID, feed.ID); err != nil {
+			_ = feedRepo.DeleteFeedByID(feed.ID)
 			c.Response().Header().Set("HX-Reswap", "innerHTML")
 			c.Response().Header().Set("HX-Retarget", "#modal-error-message")
 			return c.String(200, "<p>Failed to add personal feed</p>")
