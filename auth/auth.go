@@ -18,6 +18,10 @@ func SetAuthCookie(c echo.Context, user *models.User, userRepo *repository.UserR
 	token := uuid.New().String()
 
 	user.Tokens = append(user.Tokens, token)
+	if len(user.Tokens) > 10 {
+		user.Tokens = user.Tokens[len(user.Tokens)-10:]
+	}
+
 	if err := userRepo.UpdateUser(user); err != nil {
 		return err
 	}
