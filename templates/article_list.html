@@ -25,7 +25,7 @@
             </button>
         </div>
     </div>
-    
+    <div id="scroll-target"></div>
     {{range .Articles}}
         {{template "article" .}}
     {{end}}
@@ -37,7 +37,7 @@
            {{if gt .CurrentPage 1}}
            hx-get="/feeds/{{.Feed.ID.Hex}}/articles?page={{subtract .CurrentPage 1}}&feedPage={{.FeedPage}}"
            hx-target="#content-area"
-           onclick="delayedSmoothScroll('#content-area')"
+           onclick="delayedSmoothScroll('#scroll-target')"
            {{end}}>
            Previous
         </a>
@@ -45,7 +45,7 @@
         <a class="pagination-next"
            hx-get="/feeds/{{.Feed.ID.Hex}}/articles?page={{add .CurrentPage 1}}&feedPage={{.FeedPage}}"
            hx-target="#content-area"
-           onclick="delayedSmoothScroll('#content-area')">Next</a>
+           onclick="delayedSmoothScroll('#scroll-target')">Next</a>
         {{end}}
         <ul class="pagination-list">
             {{range .Pages}}
@@ -53,7 +53,7 @@
                 <a class="pagination-link {{if eq . $.CurrentPage}}is-current{{end}}"
                    hx-get="/feeds/{{$.Feed.ID.Hex}}/articles?page={{.}}&feedPage={{$.FeedPage}}"
                    hx-target="#content-area"
-                   onclick="delayedSmoothScroll('#content-area')">{{.}}</a>
+                   onclick="delayedSmoothScroll('#scroll-target')">{{.}}</a>
             </li>
             {{end}}
         </ul>

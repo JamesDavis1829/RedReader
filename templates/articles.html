@@ -12,7 +12,7 @@
             </button>
         </div>
     </div>
-
+    <div id="scroll-target"></div>
     {{range .Articles}}
         {{template "article" .}}
     {{end}}
@@ -25,7 +25,7 @@
            hx-get="/articles?page={{subtract .CurrentPage 1}}" 
            hx-target="#content-area"
            hx-push-url="true"
-           onclick="delayedSmoothScroll('#content-area')" 
+           onclick="delayedSmoothScroll('#scroll-target')" 
            {{end}}>
             Previous
         </a>
@@ -34,7 +34,7 @@
            hx-get="/articles?page={{add .CurrentPage 1}}" 
            hx-target="#content-area"
            hx-push-url="true"
-           onclick="delayedSmoothScroll('#content-area')" 
+           onclick="delayedSmoothScroll('#scroll-target')" 
            {{end}}>
             Next
         </a>
@@ -45,7 +45,7 @@
                    hx-get="/articles?page={{.}}"
                    hx-target="#content-area" 
                    hx-push-url="true"
-                   onclick="delayedSmoothScroll('#content-area')">{{.}}</a>
+                   onclick="delayedSmoothScroll('#scroll-target')">{{.}}</a>
             </li>
             {{end}}
         </ul>
